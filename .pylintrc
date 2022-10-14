@@ -1,2 +1,2 @@
 [MASTER]
-disable=fixme,logging-fstring-interpolation
+disable=fixme,logging-fstring-interpolation,import-error

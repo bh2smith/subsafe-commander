@@ -20,7 +20,9 @@ log = logging.getLogger(__name__)
 MULTISEND_CONTRACT = "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D"
 
 
-def build_encoded_multisend(transactions: list[MultiSendTx], client: EthereumClient) -> bytes:
+def build_encoded_multisend(
+    transactions: list[MultiSendTx], client: EthereumClient
+) -> bytes:
     """ "Encodes a list of transfers into Multi Send Transaction"""
     multisend = MultiSend(ethereum_client=client)
     log.info(f"Packing {len(transactions)} transfers into MultiSend")
@@ -37,11 +39,12 @@ def post_multisend(
     """Posts a MultiSend Transaction from a list of Transfers."""
     encoded_multisend = build_encoded_multisend(transactions=transfers, client=client)
     safe = Safe(address=safe_address, ethereum_client=client)
+    assert isinstance(MultiSendOperation.DELEGATE_CALL.value, int)
     safe_tx = safe.build_multisig_tx(
         to=MULTISEND_CONTRACT,
         value=0,
         data=encoded_multisend,
-        operation=MultiSendOperation.DELEGATE_CALL.value(),
+        operation=MultiSendOperation.DELEGATE_CALL.value,
     )
     # There is a deep warning being raised here:
     # Details in issue: https://github.com/safe-global/safe-eth-py/issues/294

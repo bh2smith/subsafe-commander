@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
-from eth_typing import ChecksumAddress, HexStr
+from eth_typing.evm import ChecksumAddress
+from eth_typing.encoding import HexStr
 from gnosis.safe.multi_send import MultiSendTx, MultiSendOperation
 from web3 import Web3
 
@@ -24,8 +25,8 @@ def get_token_decimals(address: ChecksumAddress) -> int:
     """Fetches Token Decimals and caches results by address"""
     # This requires a real web3 connection
     log.info(f"fetching decimals for token {address}")
-    w3 = Web3(Web3.HTTPProvider(NODE_URL))
-    token_info = w3.eth.contract(address=address, abi=ERC20_ABI)
+    web3 = Web3(Web3.HTTPProvider(NODE_URL))
+    token_info = web3.eth.contract(address=address, abi=ERC20_ABI)
     # This "trick" is because of the unknown type returned from the contract call.
     token_decimals: int = token_info.functions.decimals().call()
     return token_decimals
