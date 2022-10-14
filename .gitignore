@@ -1,9 +1,4 @@
-node_modules
+*.pyc
+venv
+__pycache__
 .env
-coverage
-coverage.json
-typechain
-
-#Hardhat files
-cache
-artifacts

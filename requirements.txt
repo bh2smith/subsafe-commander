@@ -1,0 +1,5 @@
+python-dotenv>=0.21.0
+safe-cli>=0.5.0
+safe-eth-py>=4.5.2
+web3>=5.31.1
+pytest
