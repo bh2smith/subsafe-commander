@@ -8,6 +8,15 @@ load_dotenv()
 SAFE_ADDRESS = Web3.toChecksumAddress(
     os.environ.get("SAFE_ADDRESS", "0xA03be496e67Ec29bC62F01a428683D7F9c204930")
 )
-INFURA_KEY = os.environ.get("INFURA_KEY")
-NETWORK_STRING = os.environ.get("NETWORK", "mainnet")
-NODE_URL = f"https://{NETWORK_STRING}.infura.io/v3/{INFURA_KEY}"
+NETWORK_STRING = os.environ.get("NETWORK", "gnosis")
+
+
+if NETWORK_STRING == "gnosis":
+    BASE_NODE_URL = f"https://rpc.gnosischain.com"
+    NODE_URL = BASE_NODE_URL
+else:
+    INFURA_KEY = os.environ.get("INFURA_KEY")
+    BASE_NODE_URL = f"https://{NETWORK_STRING}.infura.io/v3"
+    NODE_URL = f"{BASE_NODE_URL}/{INFURA_KEY}"
+
+print(f"Using Base Node URL {BASE_NODE_URL}")

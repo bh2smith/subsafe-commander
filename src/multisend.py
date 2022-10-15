@@ -4,16 +4,14 @@ Safe Multisend transaction consisting of Transfers
 """
 import logging.config
 
-from eth_typing.evm import ChecksumAddress
+import safe_cli
 from gnosis.eth.ethereum_client import EthereumClient
-from gnosis.eth.ethereum_network import EthereumNetwork
 from gnosis.safe import Safe
 from gnosis.safe.multi_send import MultiSend, MultiSendOperation, MultiSendTx
 
 # This dependency can be removed once this issue is resolved:
 # https://github.com/safe-global/safe-eth-py/issues/284
 from safe_cli.api.transaction_service_api import TransactionServiceApi
-
 
 log = logging.getLogger(__name__)
 
@@ -25,20 +23,20 @@ def build_encoded_multisend(
 ) -> bytes:
     """ "Encodes a list of transfers into Multi Send Transaction"""
     multisend = MultiSend(ethereum_client=client)
-    log.info(f"Packing {len(transactions)} transfers into MultiSend")
+    print(f"packing {len(transactions)} transfers into MultiSend")
     return multisend.build_tx_data(transactions)
 
 
 def post_multisend(
-    safe_address: ChecksumAddress,
-    network: EthereumNetwork,
-    transfers: list[MultiSendTx],
+    safe: Safe,
+    transactions: list[MultiSendTx],
     client: EthereumClient,
     signing_key: str,
 ) -> int:
     """Posts a MultiSend Transaction from a list of Transfers."""
-    encoded_multisend = build_encoded_multisend(transactions=transfers, client=client)
-    safe = Safe(address=safe_address, ethereum_client=client)
+    encoded_multisend = build_encoded_multisend(
+        transactions=transactions, client=client
+    )
     assert isinstance(MultiSendOperation.DELEGATE_CALL.value, int)
     safe_tx = safe.build_multisig_tx(
         to=MULTISEND_CONTRACT,
@@ -49,10 +47,18 @@ def post_multisend(
     # There is a deep warning being raised here:
     # Details in issue: https://github.com/safe-global/safe-eth-py/issues/294
     safe_tx.sign(signing_key)
-    tx_service = TransactionServiceApi(client, network)
+    tx_service = TransactionServiceApi(client, client.get_network())
     print(
-        f"Posting transaction with hash"
+        f"posting transaction with hash"
         f" {safe_tx.safe_tx_hash.hex()} to {safe.address}"
     )
-    tx_service.post_transaction(safe_address=safe.address, safe_tx=safe_tx)
-    return int(safe_tx.safe_nonce)
+    # TODO - command prompt are you sure
+    try:
+        tx_service.post_transaction(safe_address=safe.address, safe_tx=safe_tx)
+        return int(safe_tx.safe_nonce)
+    except safe_cli.api.transaction_service_api.BaseAPIException as err:
+        print(
+            f"Transaction NOT posted failing gracefully with Safe Transaction service Base API error:"
+            f"{err} and returning -1 (an invalid safe transaction nonce)"
+        )
+        return -1
