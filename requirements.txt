@@ -1,5 +1,6 @@
 black>=22.10.0
 mypy>=0.982
+pylint>=2.15.4
 python-dotenv>=0.21.0
 pytest>=7.1.3
 safe-cli>=0.5.0

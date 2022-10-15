@@ -33,7 +33,11 @@ def post_multisend(
     client: EthereumClient,
     signing_key: str,
 ) -> int:
-    """Posts a MultiSend Transaction from a list of Transfers."""
+    """
+    Posts a MultiSend Transaction from a list of Transfers.
+    On success: Returns an integer representing resulting parent safe transaction nonce
+    On Safe Transaction Service Error: Returns -1
+    """
     encoded_multisend = build_encoded_multisend(
         transactions=transactions, client=client
     )
@@ -58,7 +62,8 @@ def post_multisend(
         return int(safe_tx.safe_nonce)
     except safe_cli.api.transaction_service_api.BaseAPIException as err:
         print(
-            f"Transaction NOT posted failing gracefully with Safe Transaction service Base API error:"
+            f"Transaction NOT posted failing gracefully with "
+            f"Safe Transaction service Base API error:"
             f"{err} and returning -1 (an invalid safe transaction nonce)"
         )
         return -1

@@ -118,26 +118,6 @@ class Transfer:
         assert self.token is not None
         return self.amount_wei / int(10**self.token.decimals)
 
-    def merge(self, other: Transfer) -> Transfer:
-        """
-        Merge two transfers (acts like addition)
-        if all fields except amount are equal, returns a transfer who amount is the sum
-        """
-        merge_requirements = [
-            self.receiver == other.receiver,
-            self.token == other.token,
-        ]
-        if all(merge_requirements):
-            return Transfer(
-                token=self.token,
-                receiver=self.receiver,
-                amount_wei=self.amount_wei + other.amount_wei,
-            )
-        raise ValueError(
-            f"Can't merge tokens {self}, {other}. "
-            f"Requirements met {merge_requirements}"
-        )
-
     def as_multisend_tx(self) -> MultiSendTx:
         """Converts Transfer into encoded MultiSendTx bytes"""
         if self.token_type == TokenType.NATIVE:
