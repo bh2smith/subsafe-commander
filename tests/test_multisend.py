@@ -2,12 +2,15 @@ import unittest
 
 from eth_typing import URI
 from gnosis.eth import EthereumClient
+from web3 import Web3
 
 from src.environment import INFURA_KEY
 from src.multisend import build_encoded_multisend
-from web3 import Web3
-
 from src.token_transfer import Token, Transfer
+
+
+# These tests are more related to the CSV Airdrop app since the consist of token transfers).
+# TODO generalize the Multisend to beyond Token transfers.
 
 
 class TestMultiSend(unittest.TestCase):

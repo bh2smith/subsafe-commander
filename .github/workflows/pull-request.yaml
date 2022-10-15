@@ -22,5 +22,5 @@ jobs:
         run:
           python -m pytest tests
         env:
-          # We make a rinkeby request in one unit test
           INFURA_KEY: ${{ secrets.INFURA_KEY }}
+          PROPOSER_KY: ${{ secrets.PROPOSER_PK }}

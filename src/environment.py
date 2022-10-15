@@ -2,14 +2,10 @@
 import os
 
 from dotenv import load_dotenv
-from web3 import Web3
 
 load_dotenv()
-SAFE_ADDRESS = Web3.toChecksumAddress(
-    os.environ.get("SAFE_ADDRESS", "0xA03be496e67Ec29bC62F01a428683D7F9c204930")
-)
 NETWORK_STRING = os.environ.get("NETWORK", "gnosis")
-INFURA_KEY = os.environ.get("INFURA_KEY")
+INFURA_KEY = os.environ.get("INFURA_KEY", "EmptyInfuraKey!")
 
 if NETWORK_STRING == "gnosis":
     BASE_NODE_URL = "https://rpc.gnosischain.com"
