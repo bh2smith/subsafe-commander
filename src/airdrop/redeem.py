@@ -41,7 +41,7 @@ class Allocation:
     Assuming the incoming data is correct (since it is coming from Safe Foundation)
     """
 
-    # pylint:disable=invalid-name
+    # pylint:disable=invalid-name,too-many-instance-attributes
     tag: str
     account: str
     chainId: int
