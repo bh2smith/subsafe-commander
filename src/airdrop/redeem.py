@@ -32,6 +32,7 @@ ALLOCATION_BASE_URL = "https://safe-claiming-app-data.gnosis-safe.io/allocations
 
 RedeemParams = tuple[int, int, int, int, list[str]]
 
+
 @dataclass
 class Allocation:
     """
@@ -65,7 +66,9 @@ class Allocation:
         Note that Safes received multiple Allocations (of different types)
         so this constructor returns a list.
         """
-        response = requests.get(url=cls.api_url(safe_address))
+        response = requests.get(url=cls.api_url(safe_address), timeout=5)
+        if not response.ok:
+            raise RuntimeError(f"Allocation Request failed with response {response}")
         return [
             json.loads(json.dumps(entry), object_hook=lambda d: Allocation(**d))
             for entry in response.json()
@@ -124,7 +127,9 @@ def build_and_sign_redeem(safe: Safe, sub_safe: Safe) -> MultiSendTx:
     return MultiSendTx(
         to=sub_safe.address,
         value=0,
-        data=encode_exec_transaction(sub_safe, safe.address, encode_redeem_tx(sub_safe)),
+        data=encode_exec_transaction(
+            sub_safe, safe.address, encode_redeem_tx(sub_safe)
+        ),
         operation=MultiSendOperation.CALL,
     )
 
