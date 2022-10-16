@@ -4,6 +4,8 @@ from pathlib import Path
 
 LOG_CONFIG_FILE = Path(__file__).parent.parent / Path("logging.conf")
 
+ZERO_ADDRESS = "0x".ljust(42, "0")
+
 ERC20_ABI = json.loads(
     """[
     {

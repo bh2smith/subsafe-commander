@@ -23,4 +23,4 @@ jobs:
           python -m pytest tests
         env:
           INFURA_KEY: ${{ secrets.INFURA_KEY }}
-          PROPOSER_KY: ${{ secrets.PROPOSER_PK }}
+          PROPOSER_PK: ${{ secrets.PROPOSER_PK }}
