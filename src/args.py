@@ -16,6 +16,7 @@ class SafeFamily:
     """
     Simple data class holding a Safe and a collection of Sub Safes
     """
+
     parent: ChecksumAddress
     children: list[ChecksumAddress]
 
