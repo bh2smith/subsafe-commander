@@ -1,0 +1,81 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "vestingId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "beneficiary",
+        "type": "address"
+      },
+      {
+        "internalType": "uint128",
+        "name": "tokensToClaim",
+        "type": "uint128"
+      }
+    ],
+    "name": "claimVestedTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "vestingId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "beneficiary",
+        "type": "address"
+      },
+      {
+        "internalType": "uint128",
+        "name": "tokensToClaim",
+        "type": "uint128"
+      }
+    ],
+    "name": "claimVestedTokensViaModule",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "curveType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "durationWeeks",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint64",
+        "name": "startDate",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint128",
+        "name": "amount",
+        "type": "uint128"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "proof",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "redeem",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
