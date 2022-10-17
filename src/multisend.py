@@ -5,11 +5,12 @@ Safe Multisend transaction consisting of Transfers
 import logging.config
 import sys
 
+from eth_typing.encoding import HexStr
 from gnosis.eth.ethereum_client import EthereumClient
 from gnosis.safe import Safe, SafeTx, SafeOperation
 from gnosis.safe.api import TransactionServiceApi
 from gnosis.safe.api.base_api import SafeAPIException
-from gnosis.safe.multi_send import MultiSend, MultiSendTx
+from gnosis.safe.multi_send import MultiSend, MultiSendTx, MultiSendOperation
 
 log = logging.getLogger(__name__)
 
@@ -71,3 +72,13 @@ def build_and_sign_multisend(
     # Details in issue: https://github.com/safe-global/safe-eth-py/issues/294
     safe_tx.sign(signing_key)
     return safe_tx
+
+
+def build_multisend_from_data(safe: Safe, data: HexStr, value: int = 0) -> MultiSendTx:
+    """Constructs a MultiSend Transaction for Safe with provided Data"""
+    return MultiSendTx(
+        to=safe.address,
+        value=value,
+        data=data,
+        operation=MultiSendOperation.CALL,
+    )
