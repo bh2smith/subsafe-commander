@@ -1,23 +1,26 @@
 """Models associated with ERC20 Tokens and Transfers"""
 from __future__ import annotations
 
-import logging
 import functools
+import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
-from eth_typing.evm import ChecksumAddress
 from eth_typing.encoding import HexStr
+from eth_typing.evm import ChecksumAddress
 from gnosis.safe.multi_send import MultiSendTx, MultiSendOperation
 from web3 import Web3
 
+from src.abis.load import load_contract_abi
 from src.constants import ERC20_ABI
-from src.environment import NODE_URL
+from src.environment import CLIENT
 
 log = logging.getLogger(__name__)
 
-ERC20_TOKEN = Web3().eth.contract(abi=ERC20_ABI)
+ERC20_TOKEN = CLIENT.w3.eth.contract(
+    abi=load_contract_abi("erc20"),
+)
 
 
 @functools.cache
@@ -25,8 +28,7 @@ def get_token_decimals(address: ChecksumAddress) -> int:
     """Fetches Token Decimals and caches results by address"""
     # This requires a real web3 connection
     log.info(f"fetching decimals for token {address}")
-    web3 = Web3(Web3.HTTPProvider(NODE_URL))
-    token_info = web3.eth.contract(address=address, abi=ERC20_ABI)
+    token_info = CLIENT.w3.eth.contract(address=address, abi=ERC20_ABI)
     # This "trick" is because of the unknown type returned from the contract call.
     token_decimals: int = token_info.functions.decimals().call()
     return token_decimals
