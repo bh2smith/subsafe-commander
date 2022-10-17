@@ -33,6 +33,8 @@ if __name__ == "__main__":
         required=True,
         help="Supported Airdrop Contract interactions",
     )
+    # TODO - can eliminate sub-safes from here via Dune API:
+    #  dune.com/queries/1416166?d=1&Blockchain=ethereum
 
     parent, children = SafeFamily.from_args(parser).as_safes(CLIENT)
     args = parser.parse_args()
