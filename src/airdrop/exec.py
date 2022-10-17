@@ -20,8 +20,8 @@ class Command(Enum):
     CLAIM = "CLAIM"
     REDEEM = "REDEEM"
 
-    def __str__(self):
-        return self.value
+    def __str__(self) -> str:
+        return str(self.value)
 
 
 if __name__ == "__main__":
