@@ -26,6 +26,25 @@ def encode_redeem(allocation: Allocation) -> SafeTransaction:
     )
 
 
+def build_and_sign_redeem(
+    safe: Safe, sub_safe: Safe, allocation: Allocation
+) -> MultiSendTx:
+    """
+    :param safe: Safe owning each of this child safes
+    :param sub_safe: Safe owned by Parent with signing threshold = 1
+    :param allocation: contains function arguments for redeem tx
+    :return: Multisend Transaction
+    """
+    return build_multisend_from_data(
+        safe=sub_safe,
+        data=encode_exec_transaction(
+            sub_safe,
+            safe.address,
+            encode_redeem(allocation=allocation),
+        ),
+    )
+
+
 class ClaimMethods(Enum):
     """
     There are two different claim methods.
@@ -54,25 +73,6 @@ def encode_claim(
         value=0,
         data=AIRDROP_CONTRACT.encodeABI(method, claim_params),
         operation=SafeOperation.CALL,
-    )
-
-
-def build_and_sign_redeem(
-    safe: Safe, sub_safe: Safe, allocation: Allocation
-) -> MultiSendTx:
-    """
-    :param safe: Safe owning each of this child safes
-    :param sub_safe: Safe owned by Parent with signing threshold = 1
-    :param allocation: contains function arguments for redeem tx
-    :return: Multisend Transaction
-    """
-    return build_multisend_from_data(
-        safe=sub_safe,
-        data=encode_exec_transaction(
-            sub_safe,
-            safe.address,
-            encode_redeem(allocation=allocation),
-        ),
     )
 
 
