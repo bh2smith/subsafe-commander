@@ -4,7 +4,7 @@ from eth_typing import URI
 from gnosis.eth import EthereumClient
 
 from src.airdrop.allocation import Allocation
-from src.airdrop.redeem import encode_redeem
+from src.airdrop.encode import encode_redeem
 from src.environment import INFURA_KEY
 from src.safe import get_safe
 
