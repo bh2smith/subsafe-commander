@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+from typing import Optional
 
 from eth_typing.encoding import HexStr
 from eth_typing.evm import ChecksumAddress
@@ -75,9 +76,10 @@ class SafeFamily:
     children: list[ChecksumAddress]
 
     @classmethod
-    def from_args(cls) -> SafeFamily:
+    def from_args(cls, parser: Optional[argparse.ArgumentParser] = None) -> SafeFamily:
         """Parses Instance of class from command line arguments."""
-        parser = argparse.ArgumentParser("Safe Family Arguments")
+        if parser is None:
+            parser = argparse.ArgumentParser("Safe Family Arguments")
         parser.add_argument(
             "--parent",
             type=str,

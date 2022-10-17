@@ -7,12 +7,11 @@ from web3 import Web3
 
 from src.add_owner import (
     build_add_owner_with_threshold,
-    build_and_sign_multisend,
     AddOwnerArgs,
 )
-from src.constants import ZERO_ADDRESS
 from src.environment import NODE_URL
-from src.safe import encode_exec_transaction, get_safe
+from src.multisend import build_and_sign_multisend
+from src.safe import get_safe
 
 
 class TestMultiAddOwner(unittest.TestCase):

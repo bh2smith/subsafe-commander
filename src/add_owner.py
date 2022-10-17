@@ -4,15 +4,12 @@ import os
 from dataclasses import dataclass
 
 from eth_typing.evm import ChecksumAddress
-from gnosis.eth import EthereumClient
 from gnosis.safe import Safe, SafeOperation
-from gnosis.safe.api import TransactionServiceApi
 from gnosis.safe.multi_send import MultiSendTx, MultiSendOperation
 from web3 import Web3
 
 from src.environment import CLIENT
-from src.multisend import post_safe_tx, build_and_sign_multisend
-from src.safe import SafeTransaction, encode_exec_transaction, SafeFamily
+from src.safe import SafeTransaction, encode_exec_transaction, SafeFamily, multi_exec
 
 
 @dataclass
@@ -65,47 +62,6 @@ def build_add_owner_with_threshold(
     )
 
 
-def multi_add_owner(
-    safe: Safe,
-    sub_safes: list[Safe],
-    params: AddOwnerArgs,
-    client: EthereumClient,
-    signing_key: str,
-) -> int:
-    """
-    Iteratively builds and posts a multisend transaction adding `new_owner` to each child safe.
-    Requires that `parent` is a single signer on all `children`.
-    """
-    print(
-        f"loaded Parent Safe {safe.address}: version={parent.retrieve_version()} "
-        f"along with {len(children)} child safes"
-    )
-
-    print(
-        f"building an executing a MultiSend transaction consisting of calls to "
-        f"addOwnerWithThreshold on each of {children}"
-    )
-    return post_safe_tx(
-        safe_tx=build_and_sign_multisend(
-            safe=safe,
-            transactions=[
-                build_add_owner_with_threshold(
-                    safe=safe,
-                    # Unfortunate thing about having this so deeply nested
-                    # is that we can't log about the loaded child safes:
-                    # functional programming ftw
-                    sub_safe=sub_safe,
-                    params=params,
-                )
-                for sub_safe in sub_safes
-            ],
-            client=client,
-            signing_key=signing_key,
-        ),
-        tx_service=TransactionServiceApi(client.get_network()),
-    )
-
-
 if __name__ == "__main__":
     parent, children = SafeFamily.from_args().as_safes(CLIENT)
     parser = argparse.ArgumentParser("Add Owner Args: New Owner and threshold")
@@ -122,13 +78,19 @@ if __name__ == "__main__":
         help="New Safe signature threshold",
     )
     args = parser.parse_args()
-    multi_add_owner(
-        safe=parent,
-        sub_safes=children,
-        params=AddOwnerArgs(
-            new_owner=Web3.toChecksumAddress(args.new_owner),
-            threshold=args.threshold,
-        ),
+    multi_exec(
+        parent=parent,
         client=CLIENT,
         signing_key=os.environ["PROPOSER_PK"],
+        transactions=[
+            build_add_owner_with_threshold(
+                safe=parent,
+                sub_safe=child,
+                params=AddOwnerArgs(
+                    new_owner=Web3.toChecksumAddress(args.new_owner),
+                    threshold=args.threshold,
+                ),
+            )
+            for child in children
+        ],
     )

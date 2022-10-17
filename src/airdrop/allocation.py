@@ -26,7 +26,7 @@ MAX_U128 = 340282366920938463463374607431768211455
 #     proof(bytes32[])
 # )
 RedeemParams = tuple[int, int, int, int, list[str]]
-# claimVestedTokensViaModule(
+# claimVestedTokens[ViaModule](
 #     vestingId(bytes32)
 #     beneficiary(address)
 #     tokensToClaim(uint128) = MAX_U128
