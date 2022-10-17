@@ -105,9 +105,7 @@ class SafeFamily:
         for child in self.children:
             child_safe = get_safe(child, eth_client)
             if not child_safe.retrieve_is_owner(parent.address):
-                print(
-                    f"{parent} is not an owner of {child_safe} - transactions to fail!"
-                )
+                print(f"{parent} not an owner of {child_safe}: transactions will fail!")
             children.append(child_safe)
 
         print(f"loaded Parent {parent.address} along with {len(children)} child safes")

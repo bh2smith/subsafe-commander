@@ -21,7 +21,7 @@ def build_encoded_multisend(
     transactions: list[MultiSendTx], client: EthereumClient
 ) -> bytes:
     """ "Encodes a list of transfers into Multi Send Transaction"""
-    print(f"packing {len(transactions)} transfers into MultiSend")
+    print(f"packing {len(transactions)} transactions into MultiSend")
     return MultiSend(ethereum_client=client).build_tx_data(transactions)
 
 

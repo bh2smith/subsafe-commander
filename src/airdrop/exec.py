@@ -14,44 +14,57 @@ from src.environment import CLIENT
 from src.safe import multi_exec, SafeFamily
 
 
-class AirdropCommand(Enum):
+class Command(Enum):
     """All supported Scrip Entry point commands"""
 
     CLAIM = "CLAIM"
     REDEEM = "REDEEM"
+
+    def __str__(self):
+        return self.value
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Script Arguments")
     parser.add_argument(
         "--command",
-        type=AirdropCommand,
-        choices=list(AirdropCommand),
+        type=Command,
+        choices=list(Command),
         required=True,
         help="Supported Airdrop Contract interactions",
     )
-    args = parser.parse_args()
+
     parent, children = SafeFamily.from_args(parser).as_safes(CLIENT)
-    if args.command == AirdropCommand.REDEEM:
+    args = parser.parse_args()
+    allocations = {}
+    for child in children:
+        try:
+            allocations[child] = Allocation.from_address(child.address)
+        except FileNotFoundError as err:
+            print(f"Not Found: {err} - skipping!")
+
+    if args.command == Command.REDEEM:
         transactions = [
             build_and_sign_redeem(
                 safe=parent,
                 sub_safe=child,
-                allocation=Allocation.from_address(child.address),
+                allocation=allocation,
             )
-            for child in children
+            for child, allocation in allocations.items()
         ]
-    elif args.command == AirdropCommand.CLAIM:
+
+    elif args.command == Command.CLAIM:
         print(f"Using Parent Safe {parent.address} as Beneficiary")
         transactions = [
             build_and_sign_claim(
                 safe=parent,
                 sub_safe=child,
-                allocation=Allocation.from_address(child.address),
+                allocation=allocation,
                 beneficiary=parent.address,
             )
-            for child in children
+            for child, allocation in allocations.items()
         ]
+
     else:
         raise ValueError(
             f"{args.command} is not a currently supported Airdrop interface method"
