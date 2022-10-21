@@ -24,8 +24,6 @@ class MyTestCase(unittest.TestCase):
                 )
             ]
         )
-        print(expected)
-        print(fleet)
         self.assertEqual(
             list(map(lambda t: Web3().toChecksumAddress(t), expected)),
             fleet,
