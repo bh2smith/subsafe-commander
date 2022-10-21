@@ -8,4 +8,4 @@ requests==2.28.1
 safe-cli>=0.5.0
 safe-eth-py>=4.5.2
 types-requests>=2.28.11.2
-web3>=5.31.1
+web3>=5.30.0

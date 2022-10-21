@@ -134,9 +134,9 @@ class SafeFamily:
             help="Index in (sorted) list of children to perform operation from",
         )
         parser.add_argument(
-            "--index-to",
+            "--num-safes",
             type=int,
-            default=sys.maxsize,
+            default=BATCH_SIZE_LIMIT,
             help="Index in (sorted) list of children to perform operation to",
         )
 
@@ -146,14 +146,14 @@ class SafeFamily:
             # TODO - assert BATCH SIZE LIMIT here too!
             children = [Web3().toChecksumAddress(c) for c in args.sub_safes.split(",")]
         else:
-            left, right = args.index_from, args.index_to
-            assert 0 <= left < right, f"invalid indices 0<= {left} < {right}"
-            if right - left > BATCH_SIZE_LIMIT:
+            start = args.index_from
+            length = args.num_safes
+            if length > BATCH_SIZE_LIMIT:
                 print(
-                    f"Sorry - transaction size may be too large {right - left} > {BATCH_SIZE_LIMIT}"
+                    f"Sorry - transaction size may be too large {length} > {BATCH_SIZE_LIMIT}"
                 )
                 sys.exit()
-            children = fetch_child_safes(parent, left, right)
+            children = fetch_child_safes(parent, start, start + length)
 
         print(f"Using {len(children)} child safes {children}")
         return cls(parent, children)
