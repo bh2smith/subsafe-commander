@@ -28,13 +28,33 @@ INFURA_KEY=
 NETWORK=
 ```
 
-set, run
+### Add Owner
 
 ```shell
 python -m src.add_owner 
   --parent PARENT \
   --new-owner NEW_OWNER \
   --sub-safes SUB_SAFES
+```
+
+
+### Airdrop Multi Exec
+
+
+#### Redeem
+```shell
+python -m src.exec \
+  --command REDEEM \ 
+  --parent PARENT \
+  --sub-safes SUB_SAFES 
+```
+
+#### Claim
+```shell
+python -m src.exec \
+  --command CLAIM \ 
+  --parent PARENT \
+  --sub-safes SUB_SAFES 
 ```
 
 ## Run Tests

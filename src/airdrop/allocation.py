@@ -69,7 +69,14 @@ class Allocation:
         """
         response = requests.get(url=cls.api_url(safe_address), timeout=5)
         if not response.ok:
-            raise RuntimeError(f"Allocation Request failed with response {response}")
+            if "NoSuchKey" in response.text:
+                raise FileNotFoundError(
+                    f"{safe_address} is not eligible for SAFE airdrop"
+                )
+
+            raise RuntimeError(
+                f"Allocation Request failed with unhandled response {response.text}"
+            )
 
         allocations: list[Allocation] = [
             json.loads(json.dumps(entry), object_hook=lambda d: Allocation(**d))
