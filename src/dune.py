@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from dune_client.client import DuneClient
 from dune_client.query import Query
 from dune_client.types import QueryParameter
-from eth_typing import ChecksumAddress
+from eth_typing.evm import ChecksumAddress
 from web3 import Web3
 
 
