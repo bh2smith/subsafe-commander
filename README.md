@@ -17,8 +17,11 @@ owner)
 For example, if you check these dune queries, you will find lists of safes owned by a single parent safe (this is not a
 comprehensive list)
 
-Mainnet - https://dune.xyz/queries/385974
-Gnosis Chain - https://dune.xyz/queries/385986
+For all fleets check here: [https://dune.com/queries/1436503](https://dune.com/queries/1436503)
+
+for your own put your parent safe address in here:
+- [Mainnet](https://dune.com/queries/1436503?Blockchain=ethereum)
+- [Gnosis Chain](https://dune.com/queries/1436503?Blockchain=gnosis)
 
 With environment variables
 
@@ -46,7 +49,8 @@ python -m src.add_owner
 python -m src.exec \
   --command REDEEM \ 
   --parent PARENT \
-  --sub-safes SUB_SAFES 
+  --index-from INDEX_FROM \
+  --index-to INDEX_FROM
 ```
 
 #### Claim
@@ -54,7 +58,8 @@ python -m src.exec \
 python -m src.exec \
   --command CLAIM \ 
   --parent PARENT \
-  --sub-safes SUB_SAFES 
+  --index-from INDEX_FROM \
+  --index-to INDEX_FROM 
 ```
 
 ## Run Tests

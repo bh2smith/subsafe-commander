@@ -2,9 +2,15 @@
 from __future__ import annotations
 
 import argparse
+import os
+import sys
 from dataclasses import dataclass
 from typing import Optional
 
+from dotenv import load_dotenv
+from dune_client.client import DuneClient
+from dune_client.query import Query
+from dune_client.types import QueryParameter
 from eth_typing.encoding import HexStr
 from eth_typing.evm import ChecksumAddress
 from gnosis.eth import EthereumClient
@@ -15,6 +21,9 @@ from web3 import Web3
 
 from src.constants import ZERO_ADDRESS
 from src.multisend import post_safe_tx, build_and_sign_multisend
+
+# TODO - actual benchmark for too large!
+BATCH_SIZE_LIMIT = 40
 
 
 def get_safe(address: str, client: EthereumClient) -> Safe:
@@ -66,6 +75,31 @@ def encode_exec_transaction(
     return data
 
 
+def fetch_child_safes(
+    parent: str | ChecksumAddress, index_from: int, index_to: int
+) -> list[ChecksumAddress]:
+    """Retrieves Child Safes from Parent via Dune"""
+    load_dotenv()
+    dune = DuneClient(os.environ["DUNE_API_KEY"])
+    results = dune.refresh(
+        query=Query(
+            name="Safe Families",
+            query_id=1416166,
+            params=[
+                QueryParameter.text_type("Blockchain", "ethereum"),
+                QueryParameter.text_type("ParentSafe", parent),
+                QueryParameter.number_type("IndexFrom", index_from),
+                QueryParameter.number_type("IndexTo", index_to),
+            ],
+        )
+    )
+    if len(results) == 0:
+        raise ValueError(f"No results returned for parent {parent}")
+
+    print(f"got fleet of size {len(results)}")
+    return [Web3().toChecksumAddress(row["bracket"]) for row in results]
+
+
 @dataclass
 class SafeFamily:
     """
@@ -89,14 +123,40 @@ class SafeFamily:
         parser.add_argument(
             "--sub-safes",
             type=str,
-            required=True,
+            required=False,
+            default=None,
             help="List of Ethereum addresses corresponding to Safes owned by parent safe",
         )
-        args = parser.parse_args()
-        return cls(
-            parent=Web3().toChecksumAddress(args.parent),
-            children=[Web3().toChecksumAddress(c) for c in args.sub_safes.split(",")],
+        parser.add_argument(
+            "--index-from",
+            type=int,
+            default=0,
+            help="Index in (sorted) list of children to perform operation from",
         )
+        parser.add_argument(
+            "--index-to",
+            type=int,
+            default=sys.maxsize,
+            help="Index in (sorted) list of children to perform operation to",
+        )
+
+        args = parser.parse_args()
+        parent = Web3().toChecksumAddress(args.parent)
+        if args.sub_safes is not None:
+            # TODO - assert BATCH SIZE LIMIT here too!
+            children = [Web3().toChecksumAddress(c) for c in args.sub_safes.split(",")]
+        else:
+            left, right = args.index_from, args.index_to
+            assert 0 <= left < right, f"invalid indices 0<= {left} < {right}"
+            if right - left > BATCH_SIZE_LIMIT:
+                print(
+                    f"Sorry - transaction size may be too large {right - left} > {BATCH_SIZE_LIMIT}"
+                )
+                sys.exit()
+            children = fetch_child_safes(parent, left, right)
+
+        print(f"Using {len(children)} child safes {children}")
+        return cls(parent, children)
 
     def as_safes(self, eth_client: EthereumClient) -> tuple[Safe, list[Safe]]:
         """Constructs/Fetches and returns Safe Objects from the instance attributes"""
