@@ -2,15 +2,10 @@
 from __future__ import annotations
 
 import argparse
-import os
 import sys
 from dataclasses import dataclass
 from typing import Optional
 
-from dotenv import load_dotenv
-from dune_client.client import DuneClient
-from dune_client.query import Query
-from dune_client.types import QueryParameter
 from eth_typing.encoding import HexStr
 from eth_typing.evm import ChecksumAddress
 from gnosis.eth import EthereumClient
@@ -20,6 +15,7 @@ from gnosis.safe.multi_send import MultiSendTx
 from web3 import Web3
 
 from src.constants import ZERO_ADDRESS
+from src.dune import fetch_child_safes
 from src.multisend import post_safe_tx, build_and_sign_multisend
 
 # TODO - actual benchmark for too large!
@@ -73,31 +69,6 @@ def encode_exec_transaction(
         ],
     )
     return data
-
-
-def fetch_child_safes(
-    parent: str | ChecksumAddress, index_from: int, index_to: int
-) -> list[ChecksumAddress]:
-    """Retrieves Child Safes from Parent via Dune"""
-    load_dotenv()
-    dune = DuneClient(os.environ["DUNE_API_KEY"])
-    results = dune.refresh(
-        query=Query(
-            name="Safe Families",
-            query_id=1416166,
-            params=[
-                QueryParameter.text_type("Blockchain", "ethereum"),
-                QueryParameter.text_type("ParentSafe", parent),
-                QueryParameter.number_type("IndexFrom", index_from),
-                QueryParameter.number_type("IndexTo", index_to),
-            ],
-        )
-    )
-    if len(results) == 0:
-        raise ValueError(f"No results returned for parent {parent}")
-
-    print(f"got fleet of size {len(results)}")
-    return [Web3().toChecksumAddress(row["bracket"]) for row in results]
 
 
 @dataclass

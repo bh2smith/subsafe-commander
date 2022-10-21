@@ -2,7 +2,7 @@ import unittest
 
 from web3 import Web3
 
-from src.safe import fetch_child_safes
+from src.dune import fetch_child_safes
 
 
 class MyTestCase(unittest.TestCase):
