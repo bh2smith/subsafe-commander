@@ -50,7 +50,7 @@ python -m src.exec \
   --command REDEEM \ 
   --parent PARENT \
   --index-from INDEX_FROM \
-  --index-to INDEX_FROM
+  --num-safes = NUM_SAFES
 ```
 
 #### Claim
@@ -59,7 +59,7 @@ python -m src.exec \
   --command CLAIM \ 
   --parent PARENT \
   --index-from INDEX_FROM \
-  --index-to INDEX_FROM 
+  --num-safes = NUM_SAFES
 ```
 
 ## Run Tests
