@@ -11,15 +11,16 @@ cp .env.sample .env    <----- Copy your Dune credentials here!
 
 ## Add Owner(s)
 
-This project has a script to add owners to safes which are owned by other safes (using the private key of a parent safe
-owner)
+This project has a script to add owners to safes which are owned by other safes 
+(using the private key of a parent safe's owner)
 
-For example, if you check these dune queries, you will find lists of safes owned by a single parent safe (this is not a
-comprehensive list)
+For example, the following dune queries show "fleets" of Safes owned by a single parent Safe
+(this is not a comprehensive)
 
 For all fleets check here: [https://dune.com/queries/1436503](https://dune.com/queries/1436503)
 
-for your own put your parent safe address in here:
+For your own, put your parent safe address in here:
+
 - [Mainnet](https://dune.com/queries/1436503?Blockchain=ethereum)
 - [Gnosis Chain](https://dune.com/queries/1436503?Blockchain=gnosis)
 
@@ -40,11 +41,10 @@ python -m src.add_owner
   --sub-safes SUB_SAFES
 ```
 
-
 ### Airdrop Multi Exec
 
-
 #### Redeem
+
 ```shell
 python -m src.exec \
   --command REDEEM \ 
@@ -54,6 +54,7 @@ python -m src.exec \
 ```
 
 #### Claim
+
 ```shell
 python -m src.exec \
   --command CLAIM \ 
