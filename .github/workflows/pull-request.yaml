@@ -23,4 +23,5 @@ jobs:
           python -m pytest tests
         env:
           INFURA_KEY: ${{ secrets.INFURA_KEY }}
+          DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           PROPOSER_PK: ${{ secrets.PROPOSER_PK }}

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from dataclasses import dataclass
 from typing import Optional
 
@@ -14,7 +15,11 @@ from gnosis.safe.multi_send import MultiSendTx
 from web3 import Web3
 
 from src.constants import ZERO_ADDRESS
+from src.dune import fetch_child_safes
 from src.multisend import post_safe_tx, build_and_sign_multisend
+
+# TODO - actual benchmark for too large!
+BATCH_SIZE_LIMIT = 40
 
 
 def get_safe(address: str, client: EthereumClient) -> Safe:
@@ -89,14 +94,40 @@ class SafeFamily:
         parser.add_argument(
             "--sub-safes",
             type=str,
-            required=True,
+            required=False,
+            default=None,
             help="List of Ethereum addresses corresponding to Safes owned by parent safe",
         )
-        args = parser.parse_args()
-        return cls(
-            parent=Web3().toChecksumAddress(args.parent),
-            children=[Web3().toChecksumAddress(c) for c in args.sub_safes.split(",")],
+        parser.add_argument(
+            "--index-from",
+            type=int,
+            default=0,
+            help="Index in (sorted) list of children to perform operation from",
         )
+        parser.add_argument(
+            "--num-safes",
+            type=int,
+            default=BATCH_SIZE_LIMIT,
+            help="Index in (sorted) list of children to perform operation to",
+        )
+
+        args = parser.parse_args()
+        parent = Web3().toChecksumAddress(args.parent)
+        if args.sub_safes is not None:
+            # TODO - assert BATCH SIZE LIMIT here too!
+            children = [Web3().toChecksumAddress(c) for c in args.sub_safes.split(",")]
+        else:
+            start = args.index_from
+            length = args.num_safes
+            if length > BATCH_SIZE_LIMIT:
+                print(
+                    f"Sorry - transaction size may be too large {length} > {BATCH_SIZE_LIMIT}"
+                )
+                sys.exit()
+            children = fetch_child_safes(parent, start, start + length)
+
+        print(f"Using {len(children)} child safes {children}")
+        return cls(parent, children)
 
     def as_safes(self, eth_client: EthereumClient) -> tuple[Safe, list[Safe]]:
         """Constructs/Fetches and returns Safe Objects from the instance attributes"""
