@@ -111,7 +111,7 @@ class SafeFamily:
             help="Index in (sorted) list of children to perform operation to",
         )
 
-        args = parser.parse_args()
+        args, _ = parser.parse_known_args()
         parent = Web3().toChecksumAddress(args.parent)
         if args.sub_safes is not None:
             # TODO - assert BATCH SIZE LIMIT here too!

@@ -35,10 +35,7 @@ NETWORK=
 ### Add Owner
 
 ```shell
-python -m src.add_owner 
-  --parent PARENT \
-  --new-owner NEW_OWNER \
-  --sub-safes SUB_SAFES
+python -m src.add_owner --parent PARENT --index-from INDEX_FROM --num-safes NUM_SAFES --new-owner NEW_OWNER --sub-safes SUB_SAFES
 ```
 
 ### Airdrop Multi Exec
@@ -46,21 +43,13 @@ python -m src.add_owner
 #### Redeem
 
 ```shell
-python -m src.exec \
-  --command REDEEM \ 
-  --parent PARENT \
-  --index-from INDEX_FROM \
-  --num-safes = NUM_SAFES
+python -m src.exec --command REDEEM --parent PARENT --index-from INDEX_FROM --num-safes NUM_SAFES
 ```
 
 #### Claim
 
 ```shell
-python -m src.exec \
-  --command CLAIM \ 
-  --parent PARENT \
-  --index-from INDEX_FROM \
-  --num-safes = NUM_SAFES
+python -m src.exec --command CLAIM --parent PARENT --index-from INDEX_FROM --num-safes NUM_SAFES
 ```
 
 ## Run Tests
@@ -68,3 +57,20 @@ python -m src.exec \
 ```shell
 python -m pytest tests
 ```
+
+
+## Docker
+
+
+### Build & Run
+```shell
+docker build . -t subsafe-commander
+docker run -it --rm --env-file .env --command CLAIM --parent PARENT --index-from INDEX_FROM --num-safes NUM_SAFES
+```
+
+### Pull & Run
+
+```shell
+docker run --pull=always -it --rm --env-file .env ghcr.io/bh2smith/subsafe-commander:main --command CLAIM --parent PARENT --index-from INDEX_FROM --num-safes NUM_SAFES
+```
+ 

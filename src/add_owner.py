@@ -1,15 +1,10 @@
 """A couple of helper methods associated with building ;nested Safe addOwnerWithThreshold method"""
-import argparse
-import os
 from dataclasses import dataclass
 
 from eth_typing.evm import ChecksumAddress
 from gnosis.safe import Safe, SafeOperation
 from gnosis.safe.multi_send import MultiSendTx, MultiSendOperation
-from web3 import Web3
-
-from src.environment import CLIENT
-from src.safe import SafeTransaction, encode_exec_transaction, SafeFamily, multi_exec
+from src.safe import SafeTransaction, encode_exec_transaction
 
 
 @dataclass
@@ -59,38 +54,4 @@ def build_add_owner_with_threshold(
         value=0,
         data=encode_exec_transaction(sub_safe, safe.address, transaction),
         operation=MultiSendOperation.CALL,
-    )
-
-
-if __name__ == "__main__":
-    parent, children = SafeFamily.from_args().as_safes(CLIENT)
-    parser = argparse.ArgumentParser("Add Owner Args: New Owner and threshold")
-    parser.add_argument(
-        "--new-owner",
-        type=str,
-        required=True,
-        help="Ethereum address to be added as owner of sub-safes",
-    )
-    parser.add_argument(
-        "--threshold",
-        type=int,
-        default=1,
-        help="New Safe signature threshold",
-    )
-    args = parser.parse_args()
-    multi_exec(
-        parent=parent,
-        client=CLIENT,
-        signing_key=os.environ["PROPOSER_PK"],
-        transactions=[
-            build_add_owner_with_threshold(
-                safe=parent,
-                sub_safe=child,
-                params=AddOwnerArgs(
-                    new_owner=Web3.toChecksumAddress(args.new_owner),
-                    threshold=args.threshold,
-                ),
-            )
-            for child in children
-        ],
     )
