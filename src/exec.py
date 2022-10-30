@@ -47,9 +47,11 @@ if __name__ == "__main__":
 
     parent, children = SafeFamily.from_args(parser).as_safes(CLIENT)
     args, _ = parser.parse_known_args()
-    if args.command.is_airdrop_function():
-        transactions = transactions_for(parent, children, args.command)
-    elif args.command == ExecCommand.ADD_OWNER:
+    command: ExecCommand = args.command
+
+    if command.is_airdrop_function():
+        transactions = transactions_for(parent, children, command.as_airdrop_command())
+    elif command == ExecCommand.ADD_OWNER:
         parser = argparse.ArgumentParser("Add Owner Arguments")
         parser.add_argument(
             "--new-owner",
