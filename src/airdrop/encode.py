@@ -56,6 +56,9 @@ class ClaimMethods(Enum):
     REGULAR = "claimVestedTokens"
     MODULE = "claimVestedTokensViaModule"
 
+    def __str__(self) -> str:
+        return str(self.value)
+
 
 def encode_claim(
     allocation: Allocation,
@@ -67,11 +70,10 @@ def encode_claim(
     """
     # Could also use allocation.as_claim_params(beneficiary) - not sure what is better.
     claim_params = [allocation.vestingId, beneficiary, MAX_U128]
-
     return SafeTransaction(
         to=AIRDROP_CONTRACT.address,
         value=0,
-        data=AIRDROP_CONTRACT.encodeABI(method, claim_params),
+        data=AIRDROP_CONTRACT.encodeABI(str(method), claim_params),
         operation=SafeOperation.CALL,
     )
 
