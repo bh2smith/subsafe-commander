@@ -18,7 +18,7 @@ from src.constants import ZERO_ADDRESS
 from src.dune import fetch_child_safes
 from src.multisend import post_safe_tx, build_and_sign_multisend
 
-# See benchmarks: 
+# See benchmarks:
 # https://github.com/bh2smith/subsafe-commander/issues/4#issuecomment-1297738947
 BATCH_SIZE_LIMIT = 80
 
