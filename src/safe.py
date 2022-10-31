@@ -19,7 +19,7 @@ from src.dune import fetch_child_safes
 from src.multisend import post_safe_tx, build_and_sign_multisend
 
 # TODO - actual benchmark for too large!
-BATCH_SIZE_LIMIT = 40
+BATCH_SIZE_LIMIT = 60
 
 
 def get_safe(address: str, client: EthereumClient) -> Safe:

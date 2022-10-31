@@ -33,9 +33,7 @@ def post_safe_tx(safe_tx: SafeTx, tx_service: TransactionServiceApi) -> int:
     """
     assert safe_tx.signatures != b"", "Attempt to post unsigned transaction!"
     address, tx_hash = safe_tx.safe_address, safe_tx.safe_tx_hash.hex()
-    print(
-        f"posting transaction with hash {tx_hash} to {address} and call data:\n{safe_tx.data.hex()}"
-    )
+    print(f"posting transaction with hash {tx_hash} to {address}")
     if input("are you sure? (y/n)") != "y":
         sys.exit()
     try:
