@@ -58,7 +58,7 @@ With environment variables
 # General defaults
 NETWORK=mainnet
 INDEX_FROM=0
-NUM_SAFES=80 <-- This is the CAP.
+NUM_SAFES=90 <-- This is the CAP.
 # Must be provided
 INFURA_KEY=
 PARENT_SAFE=
