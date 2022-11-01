@@ -28,29 +28,15 @@ docker run --pull=always -it --rm \
 If you don't have a `DUNE_API_KEY`, you can also provide an additional argument `--sub-safes` with a
 comma separated list of safes owned by `$PARENT_SAFE`.
 
-# Installation
+## Find your Sub-Safes
 
-```shell
-python3 -m venv env
-source ./env/bin/activate
-pip install -r requirements.txt
-cp .env.sample .env    <----- Copy your Dune credentials here!
-```
+For example, the following dune query shows "fleets" of Safes owned by a single parent
+(this is not a comprehensive list)
 
-## Add Owner(s)
+For all fleets on all networks check
+here: [https://dune.com/queries/1436503](https://dune.com/queries/1436503)
 
-This project has a script to add owners to safes which are owned by other safes
-(using the private key of a parent safe's owner)
-
-For example, the following dune queries show "fleets" of Safes owned by a single parent Safe
-(this is not a comprehensive)
-
-For all fleets check here: [https://dune.com/queries/1436503](https://dune.com/queries/1436503)
-
-For your own, put your parent safe address in here:
-
-- [Mainnet](https://dune.com/queries/1436503?Blockchain=ethereum)
-- [Gnosis Chain](https://dune.com/queries/1436503?Blockchain=gnosis)
+## General Usage
 
 With environment variables
 
@@ -67,10 +53,17 @@ PROPOSER_PK=
 DUNE_API_KEY=
 ```
 
-## General Usage
+this project exposes the following contract method calls:
 
 ```shell
-python -m src.exec --command $COMMAND --parent $PARENT_SAFE --index-from $INDEX_FROM --num-safes $NUM_SAFES [--sub-safes SUB_SAFES]
+docker run --pull=always -it --rm \
+  --env-file .env \
+  ghcr.io/bh2smith/subsafe-commander:main \
+  --command $COMMAND \
+  --parent $PARENT_SAFE \
+  --index-from $INDEX_FROM \ 
+  --num-safes $NUM_SAFES \
+  [--sub-safes SUB_SAFES]
 ```
 
 with currently supported commands
@@ -82,11 +75,11 @@ with currently supported commands
 Note that `--sub-safes` is optional. If not provided then a `DUNE_API_KEY` will be expected (to
 fetch them).
 
-### Add Owner
+## Safe: Add Owner
 
 Requires additional arguments `--new-owner NEW_OWNER`
 
-### Airdrop
+## Airdrop
 
 Individual commands are supported as well as "Full Claim" (--command FullClaim)
 which combines delegate, redeem and claim into a single transaction.
@@ -113,9 +106,12 @@ Requires no additional arguments. It sets the beneficiary of the SAFE tokens to 
 For more examples, see some gas
 benchmarking [here](https://github.com/bh2smith/subsafe-commander/issues/4)
 
-## Full Claim
+### Full Claim
 
-### Snapshot
+This project also supports a full claim cycle, which is the combination of (delegate, redeem and
+claim). However, due to gas limitations this is restricted to a maximum of 30 safes.
+
+## Snapshot
 
 #### setDelegate
 
@@ -124,6 +120,15 @@ Requires no additional arguments. It sets the delegate of "safe.eth" namespace t
 #### clearDelegate
 
 Requires no additional arguments.
+
+# Installation & Local Development
+
+```shell
+python3 -m venv env
+source ./env/bin/activate
+pip install -r requirements.txt
+cp .env.sample .env    <----- Copy your Dune credentials here!
+```
 
 ## Run Tests
 
