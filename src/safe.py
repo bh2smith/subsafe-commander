@@ -25,7 +25,7 @@ log = set_log(__name__)
 
 # See benchmarks:
 # https://github.com/bh2smith/subsafe-commander/issues/4#issuecomment-1297738947
-BATCH_SIZE_LIMIT = 80
+BATCH_SIZE_LIMIT = 90
 
 
 def get_safe(address: str, client: EthereumClient) -> Safe:
