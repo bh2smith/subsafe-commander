@@ -2,7 +2,9 @@
 import json
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).parent.parent
 LOG_CONFIG_FILE = Path(__file__).parent.parent / Path("logging.conf")
+ABI_PATH = Path(__file__).parent.parent / Path("src/abis")
 
 ZERO_ADDRESS = "0x".ljust(42, "0")
 

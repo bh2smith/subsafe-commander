@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import functools
-import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
@@ -15,8 +14,9 @@ from web3 import Web3
 from src.abis.load import load_contract_abi
 from src.constants import ERC20_ABI
 from src.environment import CLIENT
+from src.log import set_log
 
-log = logging.getLogger(__name__)
+log = set_log(__name__)
 
 ERC20_TOKEN = CLIENT.w3.eth.contract(
     abi=load_contract_abi("erc20"),

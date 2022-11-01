@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import sys
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Any
 
 from eth_typing.encoding import HexStr
 from eth_typing.evm import ChecksumAddress
@@ -13,10 +13,15 @@ from gnosis.safe import Safe, SafeOperation
 from gnosis.safe.api import TransactionServiceApi
 from gnosis.safe.multi_send import MultiSendTx
 from web3 import Web3
+from web3.contract import Contract
 
 from src.constants import ZERO_ADDRESS
 from src.dune import fetch_child_safes
 from src.multisend import post_safe_tx, build_and_sign_multisend
+
+from src.log import set_log
+
+log = set_log(__name__)
 
 # See benchmarks:
 # https://github.com/bh2smith/subsafe-commander/issues/4#issuecomment-1297738947
@@ -39,6 +44,21 @@ class SafeTransaction:
     value: int
     data: HexStr
     operation: SafeOperation
+
+
+def encode_contract_method(
+    contract: Contract, method: str, params: list[Any], value: int = 0
+) -> SafeTransaction:
+    """
+    Encodes the Contract.method{value}(params) as a SafeTransaction
+    """
+    log.info(f"Building {method}({params}) with value {value / 10**18:.6f} ETH")
+    return SafeTransaction(
+        to=contract.address,
+        value=value,
+        data=contract.encodeABI(method, params),
+        operation=SafeOperation.CALL,
+    )
 
 
 def encode_exec_transaction(
@@ -140,7 +160,7 @@ class SafeFamily:
                 print(f"{parent} not an owner of {child_safe}: transactions will fail!")
             children.append(child_safe)
 
-        print(f"loaded Parent {parent.address} along with {len(children)} child safes")
+        print(f"loaded parent {parent.address} along with {len(children)} child safes")
         return parent, children
 
 

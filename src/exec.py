@@ -11,7 +11,8 @@ from enum import Enum
 from web3 import Web3
 
 from src.add_owner import build_add_owner_with_threshold, AddOwnerArgs
-from src.airdrop.tx import transactions_for, AirdropCommand
+from src.airdrop.tx import transactions_for as airdrop_tx_for, AirdropCommand
+from src.snapshot.tx import transactions_for as snapshot_tx_for, SnapshotCommand
 from src.environment import CLIENT
 from src.safe import multi_exec, SafeFamily
 
@@ -22,6 +23,8 @@ class ExecCommand(Enum):
     CLAIM = "CLAIM"
     REDEEM = "REDEEM"
     ADD_OWNER = "ADD_OWNER"
+    SET_DELEGATE = "setDelegate"
+    CLEAR_DELEGATE = "clearDelegate"
 
     def __str__(self) -> str:
         return str(self.value)
@@ -30,9 +33,17 @@ class ExecCommand(Enum):
         """Returns true if command is an airdrop contract function"""
         return self in {ExecCommand.CLAIM, ExecCommand.REDEEM}
 
+    def is_snapshot_function(self) -> bool:
+        """Returns true if command is an snapshot contract function"""
+        return self in {ExecCommand.SET_DELEGATE, ExecCommand.CLEAR_DELEGATE}
+
     def as_airdrop_command(self) -> AirdropCommand:
         """Converts command into AirdropCommand. fails if not"""
         return AirdropCommand(self.value)
+
+    def as_snapshot_command(self) -> SnapshotCommand:
+        """Converts command into SnapshotCommand. fails if not"""
+        return SnapshotCommand(self.value)
 
 
 if __name__ == "__main__":
@@ -50,7 +61,9 @@ if __name__ == "__main__":
     command: ExecCommand = args.command
 
     if command.is_airdrop_function():
-        transactions = transactions_for(parent, children, command.as_airdrop_command())
+        transactions = airdrop_tx_for(parent, children, command.as_airdrop_command())
+    elif command.is_snapshot_function():
+        transactions = snapshot_tx_for(parent, children, command.as_snapshot_command())
     elif command == ExecCommand.ADD_OWNER:
         parser = argparse.ArgumentParser("Add Owner Arguments")
         parser.add_argument(
