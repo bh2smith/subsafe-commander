@@ -52,6 +52,7 @@ class DelegationId:
         return self.bytes == other.bytes
 
 
+SAFE_DELEGATION_ID = DelegationId.from_str("safe.eth")
 HexDelegationId = str  # Hex Representation of Bytes32
 # Read
 # delegation(delegator(address), id(bytes32))
