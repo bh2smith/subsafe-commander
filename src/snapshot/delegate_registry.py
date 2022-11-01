@@ -3,10 +3,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from eth_typing.evm import ChecksumAddress
 from web3 import Web3
 
 from src.abis.load import load_contract_abi
 from src.environment import CLIENT
+from src.log import set_log
+from src.safe import SafeTransaction, encode_contract_method
+
+log = set_log(__name__)
 
 DELEGATION_CONTRACT = CLIENT.w3.eth.contract(
     address=Web3().toChecksumAddress("0x469788fE6E9E9681C6ebF3bF78e7Fd26Fc015446"),
@@ -14,6 +19,7 @@ DELEGATION_CONTRACT = CLIENT.w3.eth.contract(
 )
 
 
+# TODO - this should be a standard generic type converter (probably also works the same for ens).
 @dataclass
 class DelegationId:
     """Holds logic for constructing and converting various representations of a Delegation ID"""
@@ -53,5 +59,23 @@ DelegationParams = tuple[str, HexDelegationId]
 # Write:
 # clearDelegate(id(bytes32[]))
 ClearDelegateParams = tuple[HexDelegationId]
-# clearDelegate(id(bytes32[]), delegate(address))
+# setDelegate(id(bytes32[]), delegate(address))
 SetDelegateParams = tuple[DelegationId, HexDelegationId]
+
+
+def encode_set_delegate(
+    d_id: DelegationId, delegate: ChecksumAddress
+) -> SafeTransaction:
+    """
+    Encodes the DelegateRegistry.setDelegate as a SafeTransaction
+    """
+    return encode_contract_method(
+        DELEGATION_CONTRACT, "setDelegate", [d_id.hex, delegate]
+    )
+
+
+def encode_clear_delegate(d_id: DelegationId) -> SafeTransaction:
+    """
+    Encodes the DelegateRegistry.clearDelegate as a SafeTransaction
+    """
+    return encode_contract_method(DELEGATION_CONTRACT, "clearDelegate", [d_id.hex])
