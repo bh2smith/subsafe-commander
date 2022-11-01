@@ -118,16 +118,14 @@ class TestMultiSend(unittest.TestCase):
             str(err.exception),
         )
 
-        with self.assertLogs("src.multisend", level="INFO") as log:
-            partitioned_build_multisend(
+        with self.assertLogs("src.multisend", level="INFO"):
+            txs = partitioned_build_multisend(
                 safe,
                 transactions=too_many_transactions,
                 client=self.client,
                 signing_key="0" * 64,
             )
-            self.assertEqual(
-                f"partitioned {BATCH_SIZE_LIMIT + 1} into 2 batches", log.output
-            )
+        self.assertEqual(len(txs), 2)
 
 
 if __name__ == "__main__":
