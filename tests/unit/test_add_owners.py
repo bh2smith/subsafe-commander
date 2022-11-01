@@ -97,7 +97,7 @@ class TestMultiAddOwner(unittest.TestCase):
                 for child in self.sub_safes
             ],
             client=self.client,
-            signing_key=os.environ["PROPOSER_PK"],
+            signing_key="0" * 64,
         )
         expected = (
             "0x8d80ff0a"

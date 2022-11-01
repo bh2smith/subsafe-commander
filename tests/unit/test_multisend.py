@@ -1,11 +1,18 @@
 import unittest
 
-from eth_typing import URI
+from eth_typing import URI, HexStr
 from gnosis.eth import EthereumClient
+from gnosis.safe.multi_send import MultiSendTx, MultiSendOperation
 from web3 import Web3
 
 from src.environment import INFURA_KEY
-from src.multisend import build_encoded_multisend
+from src.multisend import (
+    build_encoded_multisend,
+    build_and_sign_multisend,
+    BATCH_SIZE_LIMIT,
+    partitioned_build_multisend,
+)
+from src.safe import get_safe
 from src.token_transfer import Token, Transfer
 
 
@@ -85,6 +92,40 @@ class TestMultiSend(unittest.TestCase):
             "bb7eba25a4da65aecf47654f08ab000000000000000000000000000000000000"
             "000000000000000000000000000f000000000000000000000000000000000000",
         )
+
+    def test_large_batches(self):
+        client = EthereumClient(URI("https://rpc.gnosischain.com"))
+        safe = get_safe("0x206a9EAa7d0f9637c905F2Bf86aCaB363Abb418c", client)
+        recipient = Web3().toChecksumAddress("0x".ljust(42, "0"))
+        too_many_transactions = [
+            MultiSendTx(
+                to=recipient,
+                value=0,
+                data=HexStr("0x"),
+                operation=MultiSendOperation.CALL,
+            )
+        ] * (BATCH_SIZE_LIMIT + 1)
+        with self.assertRaises(RuntimeError) as err:
+            build_and_sign_multisend(
+                safe,
+                transactions=too_many_transactions,
+                client=self.client,
+                signing_key="",
+            )
+        self.assertEqual(
+            f"too many transactions for single batch "
+            f"({BATCH_SIZE_LIMIT + 1}), use partitioned_build_multisend!",
+            str(err.exception),
+        )
+
+        with self.assertLogs("src.multisend", level="INFO"):
+            txs = partitioned_build_multisend(
+                safe,
+                transactions=too_many_transactions,
+                client=self.client,
+                signing_key="0" * 64,
+            )
+        self.assertEqual(len(txs), 2)
 
 
 if __name__ == "__main__":
