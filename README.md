@@ -60,6 +60,10 @@ Requires additional arguments `--new-owner NEW_OWNER`
 
 ### Airdrop
 
+Individual commands are supported as well as "Full Claim" (--command FullClaim)
+which combines delegate, redeem and claim into a single transaction. 
+Note: that this is **not** recommended for more than 26 SubSafes at a time
+
 #### Redeem
 
 Requires no additional arguments
