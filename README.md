@@ -61,19 +61,26 @@ Requires additional arguments `--new-owner NEW_OWNER`
 ### Airdrop
 
 Individual commands are supported as well as "Full Claim" (--command FullClaim)
-which combines delegate, redeem and claim into a single transaction. 
+which combines delegate, redeem and claim into a single transaction.
 Note: that this is **not** recommended for more than 26 SubSafes at a time
 
 #### Redeem
 
-Requires no additional arguments
+Requires no additional arguments. Note that no token transfers are expected to occur during
+redemption, these happen on claim (and claim comes after redeem).
 
 ##### Examples
-- REDEEM with 5 sub-safes: [0x0b1af8434e9ac016f4412f12c87bfd7b3a05ca3f0d23ac60b263aaf42a76db4a](https://etherscan.io/tx/0x0b1af8434e9ac016f4412f12c87bfd7b3a05ca3f0d23ac60b263aaf42a76db4a) 
-- CLAIM with 5 sub-safes: [0xa3cf9ad343d167d1036d466733727713af0c730ce4dd9032168439448031c0d1](https://etherscan.io/tx/0xa3cf9ad343d167d1036d466733727713af0c730ce4dd9032168439448031c0d1)
-- REDEEM with 75 sub-safes: [0x8f14a5681e805b5ab6e7d7d62393fa37de594c17b8d0d6563adaf7f7150d6377](https://etherscan.io/tx/0x8f14a5681e805b5ab6e7d7d62393fa37de594c17b8d0d6563adaf7f7150d6377)
 
-For more examples, see some gas benchmarking [here](https://github.com/bh2smith/subsafe-commander/issues/4)
+- REDEEM with 5
+  sub-safes: [0x0b1af8434e9ac016f4412f12c87bfd7b3a05ca3f0d23ac60b263aaf42a76db4a](https://etherscan.io/tx/0x0b1af8434e9ac016f4412f12c87bfd7b3a05ca3f0d23ac60b263aaf42a76db4a)
+- CLAIM with 5
+  sub-safes: [0xa3cf9ad343d167d1036d466733727713af0c730ce4dd9032168439448031c0d1](https://etherscan.io/tx/0xa3cf9ad343d167d1036d466733727713af0c730ce4dd9032168439448031c0d1)
+- REDEEM with 75
+  sub-safes: [0x8f14a5681e805b5ab6e7d7d62393fa37de594c17b8d0d6563adaf7f7150d6377](https://etherscan.io/tx/0x8f14a5681e805b5ab6e7d7d62393fa37de594c17b8d0d6563adaf7f7150d6377)
+
+For more examples, see some gas
+benchmarking [here](https://github.com/bh2smith/subsafe-commander/issues/4)
+
 #### Claim
 
 Requires no additional arguments. It sets the beneficiary of the SAFE tokens to `$PARENT_SAFE`.
