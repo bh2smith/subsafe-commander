@@ -25,6 +25,7 @@ class ExecCommand(Enum):
     ADD_OWNER = "ADD_OWNER"
     SET_DELEGATE = "setDelegate"
     CLEAR_DELEGATE = "clearDelegate"
+    DELEGATE_REDEEM_CLAIM = "FullClaim"
 
     def __str__(self) -> str:
         return str(self.value)
@@ -60,7 +61,18 @@ if __name__ == "__main__":
     args, _ = parser.parse_known_args()
     command: ExecCommand = args.command
 
-    if command.is_airdrop_function():
+    if command == ExecCommand.DELEGATE_REDEEM_CLAIM:
+        delegates = snapshot_tx_for(
+            parent, children, ExecCommand.SET_DELEGATE.as_snapshot_command()
+        )
+        redeems = airdrop_tx_for(
+            parent, children, ExecCommand.REDEEM.as_airdrop_command()
+        )
+        claims = airdrop_tx_for(
+            parent, children, ExecCommand.CLAIM.as_airdrop_command()
+        )
+        transactions = delegates + redeems + claims
+    elif command.is_airdrop_function():
         transactions = airdrop_tx_for(parent, children, command.as_airdrop_command())
     elif command.is_snapshot_function():
         transactions = snapshot_tx_for(parent, children, command.as_snapshot_command())
