@@ -3,13 +3,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from eth_typing.evm import ChecksumAddress
 from web3 import Web3
 
 from src.abis.load import load_contract_abi
 from src.environment import CLIENT
 from src.log import set_log
-from src.safe import SafeTransaction, encode_contract_method
 
 log = set_log(__name__)
 
@@ -38,7 +36,7 @@ class DelegationId:
         return cls(bytes=bytes.fromhex(stripped_hex))
 
     @property
-    def hex(self) -> HexDelegationId:
+    def hex(self) -> str:
         """Returns hex representation"""
         return "0x" + self.bytes.hex()
 
@@ -53,30 +51,31 @@ class DelegationId:
 
 
 SAFE_DELEGATION_ID = DelegationId.from_str("safe.eth")
-HexDelegationId = str  # Hex Representation of Bytes32
-# Read
-# delegation(delegator(address), id(bytes32))
-DelegationParams = tuple[str, HexDelegationId]
-# Write:
-# clearDelegate(id(bytes32[]))
-ClearDelegateParams = tuple[HexDelegationId]
-# setDelegate(id(bytes32[]), delegate(address))
-SetDelegateParams = tuple[DelegationId, HexDelegationId]
 
 
-def encode_set_delegate(
-    d_id: DelegationId, delegate: ChecksumAddress
-) -> SafeTransaction:
-    """
-    Encodes the DelegateRegistry.setDelegate as a SafeTransaction
-    """
-    return encode_contract_method(
-        DELEGATION_CONTRACT, "setDelegate", [d_id.hex, delegate]
-    )
-
-
-def encode_clear_delegate(d_id: DelegationId) -> SafeTransaction:
-    """
-    Encodes the DelegateRegistry.clearDelegate as a SafeTransaction
-    """
-    return encode_contract_method(DELEGATION_CONTRACT, "clearDelegate", [d_id.hex])
+## These methods below are unused currently `safe.encode_contract_method` used as generalization
+# HexDelegationId = str  # Hex Representation of Bytes32
+# # Read
+# # delegation(delegator(address), id(bytes32))
+# DelegationParams = tuple[str, HexDelegationId]
+# # Write:
+# # clearDelegate(id(bytes32[]))
+# ClearDelegateParams = tuple[HexDelegationId]
+# # setDelegate(id(bytes32[]), delegate(address))
+# SetDelegateParams = tuple[DelegationId, HexDelegationId]
+# def encode_set_delegate(
+#     d_id: DelegationId, delegate: ChecksumAddress
+# ) -> SafeTransaction:
+#     """
+#     Encodes the DelegateRegistry.setDelegate as a SafeTransaction
+#     """
+#     return encode_contract_method(
+#         DELEGATION_CONTRACT, "setDelegate", [d_id.hex, delegate]
+#     )
+#
+#
+# def encode_clear_delegate(d_id: DelegationId) -> SafeTransaction:
+#     """
+#     Encodes the DelegateRegistry.clearDelegate as a SafeTransaction
+#     """
+#     return encode_contract_method(DELEGATION_CONTRACT, "clearDelegate", [d_id.hex])

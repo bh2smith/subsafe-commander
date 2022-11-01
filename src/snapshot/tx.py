@@ -6,11 +6,10 @@ from gnosis.safe.multi_send import MultiSendTx
 
 from src.log import set_log
 from src.multisend import build_multisend_from_data
-from src.safe import encode_exec_transaction
+from src.safe import encode_exec_transaction, encode_contract_method
 from src.snapshot.delegate_registry import (
-    encode_set_delegate,
     SAFE_DELEGATION_ID,
-    encode_clear_delegate,
+    DELEGATION_CONTRACT,
 )
 
 log = set_log(__name__)
@@ -22,6 +21,9 @@ class SnapshotCommand(Enum):
     SET_DELEGATE = "setDelegate"
     CLEAR_DELEGATE = "clearDelegate"
 
+    def __str__(self) -> str:
+        return str(self.value)
+
 
 def transactions_for(
     parent: Safe, children: list[Safe], command: SnapshotCommand
@@ -32,28 +34,20 @@ def transactions_for(
         log.info(
             f"Setting delegation for namespace {SAFE_DELEGATION_ID} to parent {parent.address}"
         )
-        return [
-            build_multisend_from_data(
-                safe=child,
-                data=encode_exec_transaction(
-                    child,
-                    parent.address,
-                    encode_set_delegate(SAFE_DELEGATION_ID, parent.address),
-                ),
-            )
-            for child in children
-        ]
+        params = [SAFE_DELEGATION_ID, parent.address]
+    elif command == SnapshotCommand.CLEAR_DELEGATE:
+        params = [SAFE_DELEGATION_ID]
+    else:
+        raise EnvironmentError(f"Invalid snapshot command: {command}")
 
-    if command == SnapshotCommand.CLEAR_DELEGATE:
-        return [
-            build_multisend_from_data(
-                safe=child,
-                data=encode_exec_transaction(
-                    child,
-                    parent.address,
-                    encode_clear_delegate(SAFE_DELEGATION_ID),
-                ),
-            )
-            for child in children
-        ]
-    raise EnvironmentError(f"Invalid snapshot command: {command}")
+    return [
+        build_multisend_from_data(
+            safe=child,
+            data=encode_exec_transaction(
+                child,
+                parent.address,
+                encode_contract_method(DELEGATION_CONTRACT, str(command), params),
+            ),
+        )
+        for child in children
+    ]
