@@ -9,11 +9,11 @@ from src.environment import INFURA_KEY
 from src.multisend import (
     build_encoded_multisend,
     build_and_sign_multisend,
-    build_multisend_from_data,
     BATCH_SIZE_LIMIT,
+    partitioned_build_multisend,
 )
-from src.safe import get_safe, encode_contract_method
-from src.token_transfer import Token, Transfer, ERC20_TOKEN
+from src.safe import get_safe
+from src.token_transfer import Token, Transfer
 
 
 # These tests are more related to the CSV Airdrop app since the consist of token transfers).
@@ -93,7 +93,7 @@ class TestMultiSend(unittest.TestCase):
             "000000000000000000000000000f000000000000000000000000000000000000",
         )
 
-    def test_too_large_batch_rejected(self):
+    def test_large_batches(self):
         client = EthereumClient(URI("https://rpc.gnosischain.com"))
         safe = get_safe("0x206a9EAa7d0f9637c905F2Bf86aCaB363Abb418c", client)
         recipient = Web3().toChecksumAddress("0x".ljust(42, "0"))
@@ -117,6 +117,17 @@ class TestMultiSend(unittest.TestCase):
             f"({BATCH_SIZE_LIMIT + 1}), use partitioned_build_multisend!",
             str(err.exception),
         )
+
+        with self.assertLogs("src.multisend", level="INFO") as log:
+            partitioned_build_multisend(
+                safe,
+                transactions=too_many_transactions,
+                client=self.client,
+                signing_key="0" * 64,
+            )
+            self.assertEqual(
+                f"partitioned {BATCH_SIZE_LIMIT + 1} into 2 batches", log.output
+            )
 
 
 if __name__ == "__main__":
