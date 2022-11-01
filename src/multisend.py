@@ -64,9 +64,9 @@ def build_and_sign_multisend(
     """
     Constructs and Signs a MultiSend Transaction from a list of Transfers.
     """
-    if len(transactions) <= BATCH_SIZE_LIMIT:
+    if len(transactions) > BATCH_SIZE_LIMIT:
         raise RuntimeError(
-            "too many transactions for single batch ({len(transactions)}), "
+            f"too many transactions for single batch ({len(transactions)}), "
             "use partitioned_build_multisend!"
         )
     encoded_multisend = build_encoded_multisend(

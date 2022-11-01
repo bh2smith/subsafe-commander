@@ -1,12 +1,19 @@
 import unittest
 
-from eth_typing import URI
+from eth_typing import URI, HexStr
 from gnosis.eth import EthereumClient
+from gnosis.safe.multi_send import MultiSendTx, MultiSendOperation
 from web3 import Web3
 
 from src.environment import INFURA_KEY
-from src.multisend import build_encoded_multisend
-from src.token_transfer import Token, Transfer
+from src.multisend import (
+    build_encoded_multisend,
+    build_and_sign_multisend,
+    build_multisend_from_data,
+    BATCH_SIZE_LIMIT,
+)
+from src.safe import get_safe, encode_contract_method
+from src.token_transfer import Token, Transfer, ERC20_TOKEN
 
 
 # These tests are more related to the CSV Airdrop app since the consist of token transfers).
@@ -84,6 +91,31 @@ class TestMultiSend(unittest.TestCase):
             "00000000000000000044a9059cbb000000000000000000000000de786877a10d"
             "bb7eba25a4da65aecf47654f08ab000000000000000000000000000000000000"
             "000000000000000000000000000f000000000000000000000000000000000000",
+        )
+
+    def test_too_large_batch_rejected(self):
+        client = EthereumClient(URI("https://rpc.gnosischain.com"))
+        safe = get_safe("0x206a9EAa7d0f9637c905F2Bf86aCaB363Abb418c", client)
+        recipient = Web3().toChecksumAddress("0x".ljust(42, "0"))
+        too_many_transactions = [
+            MultiSendTx(
+                to=recipient,
+                value=0,
+                data=HexStr("0x"),
+                operation=MultiSendOperation.CALL,
+            )
+        ] * (BATCH_SIZE_LIMIT + 1)
+        with self.assertRaises(RuntimeError) as err:
+            build_and_sign_multisend(
+                safe,
+                transactions=too_many_transactions,
+                client=self.client,
+                signing_key="",
+            )
+        self.assertEqual(
+            f"too many transactions for single batch "
+            f"({BATCH_SIZE_LIMIT + 1}), use partitioned_build_multisend!",
+            str(err.exception),
         )
 
 
