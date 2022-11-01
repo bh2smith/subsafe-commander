@@ -12,9 +12,17 @@ from web3 import Web3
 
 from src.add_owner import build_add_owner_with_threshold, AddOwnerArgs
 from src.airdrop.tx import transactions_for as airdrop_tx_for, AirdropCommand
+from src.log import set_log
 from src.snapshot.tx import transactions_for as snapshot_tx_for, SnapshotCommand
 from src.environment import CLIENT
 from src.safe import multi_exec, SafeFamily
+
+log = set_log(__name__)
+
+
+def transaction_queue(address: str):
+    """URL to transaction queue"""
+    return f"https://gnosis-safe.io/app/eth:{address}/transactions/queue"
 
 
 class ExecCommand(Enum):
@@ -97,4 +105,7 @@ if __name__ == "__main__":
 
     nonce = multi_exec(
         parent, CLIENT, signing_key=os.environ["PROPOSER_PK"], transactions=transactions
+    )
+    log.info(
+        f"Transaction with nonce {nonce} posted to {transaction_queue(parent.address)}"
     )

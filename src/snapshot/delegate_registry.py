@@ -7,9 +7,6 @@ from web3 import Web3
 
 from src.abis.load import load_contract_abi
 from src.environment import CLIENT
-from src.log import set_log
-
-log = set_log(__name__)
 
 DELEGATION_CONTRACT = CLIENT.w3.eth.contract(
     address=Web3().toChecksumAddress("0x469788fE6E9E9681C6ebF3bF78e7Fd26Fc015446"),
