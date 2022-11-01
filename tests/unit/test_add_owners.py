@@ -9,14 +9,13 @@ from src.add_owner import (
     build_add_owner_with_threshold,
     AddOwnerArgs,
 )
-from src.environment import NODE_URL
 from src.multisend import build_and_sign_multisend
 from src.safe import get_safe
 
 
 class TestMultiAddOwner(unittest.TestCase):
     def setUp(self) -> None:
-        self.client = EthereumClient(URI(NODE_URL))
+        self.client = EthereumClient(URI("https://rpc.gnosischain.com"))
         self.parent = get_safe(
             "0x206a9EAa7d0f9637c905F2Bf86aCaB363Abb418c", self.client
         )
