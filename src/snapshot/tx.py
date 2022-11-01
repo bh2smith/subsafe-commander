@@ -32,7 +32,7 @@ def transactions_for(
     """Builds transaction for given Snapshot command"""
 
     if command == SnapshotCommand.SET_DELEGATE:
-        delegate = input(f"Delegate Address(default={parent.address})")
+        delegate = input(f"Delegate Address(default={parent.address}): ")
         if delegate != "":
             try:
                 delegate = Web3().toChecksumAddress(delegate)
@@ -41,9 +41,9 @@ def transactions_for(
         else:
             delegate = parent.address
         log.info(f"Setting delegation for namespace {SAFE_DELEGATION_ID} to {delegate}")
-        params = [SAFE_DELEGATION_ID, delegate]
+        params = [SAFE_DELEGATION_ID.hex, delegate]
     elif command == SnapshotCommand.CLEAR_DELEGATE:
-        params = [SAFE_DELEGATION_ID]
+        params = [SAFE_DELEGATION_ID.hex]
     else:
         raise EnvironmentError(f"Invalid snapshot command: {command}")
 
