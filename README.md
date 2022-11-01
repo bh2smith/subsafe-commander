@@ -69,7 +69,11 @@ Note: that this is **not** recommended for more than 26 SubSafes at a time
 Requires no additional arguments. Note that no token transfers are expected to occur during
 redemption, these happen on claim (and claim comes after redeem).
 
-##### Examples
+#### Claim
+
+Requires no additional arguments. It sets the beneficiary of the SAFE tokens to `$PARENT_SAFE`.
+
+#### Examples
 
 - REDEEM with 5
   sub-safes: [0x0b1af8434e9ac016f4412f12c87bfd7b3a05ca3f0d23ac60b263aaf42a76db4a](https://etherscan.io/tx/0x0b1af8434e9ac016f4412f12c87bfd7b3a05ca3f0d23ac60b263aaf42a76db4a)
@@ -80,10 +84,6 @@ redemption, these happen on claim (and claim comes after redeem).
 
 For more examples, see some gas
 benchmarking [here](https://github.com/bh2smith/subsafe-commander/issues/4)
-
-#### Claim
-
-Requires no additional arguments. It sets the beneficiary of the SAFE tokens to `$PARENT_SAFE`.
 
 ### Snapshot
 
