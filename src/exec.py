@@ -20,7 +20,7 @@ from src.safe import multi_exec, SafeFamily
 log = set_log(__name__)
 
 
-def transaction_queue(address: str):
+def transaction_queue(address: str) -> str:
     """URL to transaction queue"""
     return f"https://gnosis-safe.io/app/eth:{address}/transactions/queue"
 
