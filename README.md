@@ -1,4 +1,6 @@
-Safe Transaction Batching
+# SubSafe Commander for Safe Transaction Batching
+
+Control your Fleet of safes from the command line! Claim your $SAFE token airdrop in style. 
 
 ## TLDR;
 
