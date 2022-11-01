@@ -6,7 +6,7 @@ from eth_typing.ethpm import URI
 from gnosis.eth import EthereumClient
 
 load_dotenv()
-NETWORK_STRING = os.environ.get("NETWORK", "gnosis")
+NETWORK_STRING = os.environ.get("NETWORK", "mainnet")
 INFURA_KEY = os.environ.get("INFURA_KEY", "EmptyInfuraKey!")
 
 if NETWORK_STRING == "gnosis":

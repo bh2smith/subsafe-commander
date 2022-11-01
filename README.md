@@ -1,5 +1,33 @@
 Safe Transaction Batching
 
+## TLDR;
+
+To Claim $SAFE Airdrop on behalf of a family of sub-safes (with signing threshold 1) all of which
+are owned by a single "parent" safe, do this:
+
+Create an `.env` file with the following values:
+
+```shell
+INFURA_KEY=
+PARENT_SAFE=
+# Private key of Parent Owner
+PROPOSER_PK=
+DUNE_API_KEY=
+```
+
+Run the following (full-claim script)
+
+```shell
+docker run --pull=always -it --rm \
+  --env-file .env \
+  ghcr.io/bh2smith/subsafe-commander:main \
+  --command FullClaim \
+  --parent $PARENT_SAFE
+```
+
+If you don't have a `DUNE_API_KEY`, you can also provide an additional argument `--sub-safes` with a
+comma separated list of safes owned by `$PARENT_SAFE`.
+
 # Installation
 
 ```shell
@@ -85,6 +113,8 @@ Requires no additional arguments. It sets the beneficiary of the SAFE tokens to 
 For more examples, see some gas
 benchmarking [here](https://github.com/bh2smith/subsafe-commander/issues/4)
 
+## Full Claim
+
 ### Snapshot
 
 #### setDelegate
@@ -103,14 +133,16 @@ python -m pytest tests
 
 ## Docker
 
-### Build & Run
+### Build Locally & Run
 
 ```shell
+git clone git@github.com:bh2smith/subsafe-commander.git
+cd subsafe-commander
 docker build . -t subsafe-commander
 docker run -it --rm --env-file .env --command $COMMAND --parent $PARENT_SAFE --index-from $INDEX_FROM --num-safes $NUM_SAFES
 ```
 
-### Pull & Run
+### Pull From Anywhere & Run
 
 ```shell
 docker run --pull=always -it --rm \
@@ -121,4 +153,6 @@ docker run --pull=always -it --rm \
   --index-from $INDEX_FROM \
   --num-safes $NUM_SAFES
 ```
+
+Note, this commands expects you to have a `.env` file in your present working directory!
  
