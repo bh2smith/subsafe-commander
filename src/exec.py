@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import os
 from enum import Enum
+from itertools import chain
 
 from web3 import Web3
 
@@ -79,7 +80,8 @@ if __name__ == "__main__":
         claims = airdrop_tx_for(
             parent, children, ExecCommand.CLAIM.as_airdrop_command()
         )
-        transactions = delegates + redeems + claims
+        # Zip so all three items likely be batched together if transactions get partitioned
+        transactions = list(chain.from_iterable(zip(delegates, redeems, claims)))
     elif command.is_airdrop_function():
         transactions = airdrop_tx_for(parent, children, command.as_airdrop_command())
     elif command.is_snapshot_function():
@@ -115,9 +117,9 @@ if __name__ == "__main__":
             f"{args.command} is not a currently supported Exec interface method"
         )
 
-    nonce = multi_exec(
+    nonces = multi_exec(
         parent, CLIENT, signing_key=os.environ["PROPOSER_PK"], transactions=transactions
     )
     log.info(
-        f"Transaction with nonce {nonce} posted to {transaction_queue(parent.address)}"
+        f"Transaction with nonce(s) {nonces} posted to {transaction_queue(parent.address)}"
     )

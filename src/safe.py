@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-import sys
 from dataclasses import dataclass
 from typing import Optional, Any
 
@@ -17,15 +16,13 @@ from web3.contract import Contract
 
 from src.constants import ZERO_ADDRESS
 from src.dune import fetch_child_safes
-from src.multisend import post_safe_tx, build_and_sign_multisend
-
 from src.log import set_log
+from src.multisend import (
+    post_safe_tx,
+    partitioned_build_multisend,
+)
 
 log = set_log(__name__)
-
-# See benchmarks:
-# https://github.com/bh2smith/subsafe-commander/issues/4#issuecomment-1297738947
-BATCH_SIZE_LIMIT = 90
 
 
 def get_safe(address: str, client: EthereumClient) -> Safe:
@@ -128,23 +125,17 @@ class SafeFamily:
         parser.add_argument(
             "--num-safes",
             type=int,
-            default=BATCH_SIZE_LIMIT,
+            default=1000,
             help="Index in (sorted) list of children to perform operation to",
         )
 
         args, _ = parser.parse_known_args()
         parent = Web3().toChecksumAddress(args.parent)
         if args.sub_safes is not None:
-            # TODO - assert BATCH SIZE LIMIT here too!
             children = [Web3().toChecksumAddress(c) for c in args.sub_safes.split(",")]
         else:
             start = args.index_from
             length = args.num_safes
-            if length > BATCH_SIZE_LIMIT:
-                print(
-                    f"Sorry - transaction size may be too large {length} > {BATCH_SIZE_LIMIT}"
-                )
-                sys.exit()
             children = fetch_child_safes(parent, start, start + length)
 
         print(f"Using {len(children)} child safes {children}")
@@ -152,15 +143,17 @@ class SafeFamily:
 
     def as_safes(self, eth_client: EthereumClient) -> tuple[Safe, list[Safe]]:
         """Constructs/Fetches and returns Safe Objects from the instance attributes"""
+        print(f"loading {len(self.children) + 1} Safe instances...")
         parent = get_safe(self.parent, eth_client)
         children = []
+        # TODO - make this async!
         for child in self.children:
             child_safe = get_safe(child, eth_client)
             if not child_safe.retrieve_is_owner(parent.address):
                 print(f"{parent} not an owner of {child_safe}: transactions will fail!")
             children.append(child_safe)
 
-        print(f"loaded parent {parent.address} along with {len(children)} child safes")
+        print(f"loaded parent {parent.address} along with {len(children)} child Safes")
         return parent, children
 
 
@@ -169,19 +162,18 @@ def multi_exec(
     client: EthereumClient,
     signing_key: str,
     transactions: list[MultiSendTx],
-) -> int:
+) -> list[int]:
     """
     Iteratively builds and posts a multisend transaction adding `new_owner` to each child safe.
     Requires that `parent` is a single signer on all `children`.
     """
-    print("building an executing a multi-exec transaction")
-
-    return post_safe_tx(
-        safe_tx=build_and_sign_multisend(
+    tx_service = TransactionServiceApi(client.get_network())
+    return [
+        post_safe_tx(safe_tx=tx, tx_service=tx_service)
+        for tx in partitioned_build_multisend(
             safe=parent,
             transactions=transactions,
             client=client,
             signing_key=signing_key,
-        ),
-        tx_service=TransactionServiceApi(client.get_network()),
-    )
+        )
+    ]
