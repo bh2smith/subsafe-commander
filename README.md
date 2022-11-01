@@ -11,7 +11,7 @@ cp .env.sample .env    <----- Copy your Dune credentials here!
 
 ## Add Owner(s)
 
-This project has a script to add owners to safes which are owned by other safes 
+This project has a script to add owners to safes which are owned by other safes
 (using the private key of a parent safe's owner)
 
 For example, the following dune queries show "fleets" of Safes owned by a single parent Safe
@@ -27,30 +27,56 @@ For your own, put your parent safe address in here:
 With environment variables
 
 ```shell
-PROPOSER_PK=
+# General defaults
+NETWORK=mainnet
+INDEX_FROM=0
+NUM_SAFES=80 <-- This is the CAP.
+# Must be provided
 INFURA_KEY=
-NETWORK=
+PARENT_SAFE=
+# Private key of Parent Owner
+PROPOSER_PK=
+DUNE_API_KEY=
 ```
+
+## General Usage
+
+```shell
+python -m src.exec --command $COMMAND --parent $PARENT_SAFE --index-from $INDEX_FROM --num-safes $NUM_SAFES [--sub-safes SUB_SAFES]
+```
+
+with currently supported commands
+
+```shell
+--command {CLAIM,REDEEM,ADD_OWNER,setDelegate,clearDelegate}
+```
+
+Note that `--sub-safes` is optional. If not provided then a `DUNE_API_KEY` will be expected (to
+fetch them).
 
 ### Add Owner
 
-```shell
-python -m src.add_owner --parent PARENT --index-from INDEX_FROM --num-safes NUM_SAFES --new-owner NEW_OWNER --sub-safes SUB_SAFES
-```
+Requires additional arguments `--new-owner NEW_OWNER`
 
-### Airdrop Multi Exec
+### Airdrop
 
 #### Redeem
 
-```shell
-python -m src.exec --command REDEEM --parent PARENT --index-from INDEX_FROM --num-safes NUM_SAFES
-```
+Requires no additional arguments
 
 #### Claim
 
-```shell
-python -m src.exec --command CLAIM --parent PARENT --index-from INDEX_FROM --num-safes NUM_SAFES
-```
+Requires no additional arguments. It sets the beneficiary of the SAFE tokens to `$PARENT_SAFE`.
+
+### Snapshot
+
+#### setDelegate
+
+Requires no additional arguments. It sets the delegate of "safe.eth" namespace to `$PARENT_SAFE`.
+
+#### clearDelegate
+
+Requires no additional arguments.
 
 ## Run Tests
 
@@ -58,19 +84,24 @@ python -m src.exec --command CLAIM --parent PARENT --index-from INDEX_FROM --num
 python -m pytest tests
 ```
 
-
 ## Docker
 
-
 ### Build & Run
+
 ```shell
 docker build . -t subsafe-commander
-docker run -it --rm --env-file .env --command CLAIM --parent PARENT --index-from INDEX_FROM --num-safes NUM_SAFES
+docker run -it --rm --env-file .env --command $COMMAND --parent $PARENT_SAFE --index-from $INDEX_FROM --num-safes $NUM_SAFES
 ```
 
 ### Pull & Run
 
 ```shell
-docker run --pull=always -it --rm --env-file .env ghcr.io/bh2smith/subsafe-commander:main --command CLAIM --parent PARENT --index-from INDEX_FROM --num-safes NUM_SAFES
+docker run --pull=always -it --rm \
+  --env-file .env \
+  ghcr.io/bh2smith/subsafe-commander:main \
+  --command $COMMAND \
+  --parent $PARENT_SAFE \
+  --index-from $INDEX_FROM \
+  --num-safes $NUM_SAFES
 ```
  

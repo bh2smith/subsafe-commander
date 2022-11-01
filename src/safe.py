@@ -160,7 +160,7 @@ class SafeFamily:
                 print(f"{parent} not an owner of {child_safe}: transactions will fail!")
             children.append(child_safe)
 
-        print(f"loaded Parent {parent.address} along with {len(children)} child safes")
+        print(f"loaded parent {parent.address} along with {len(children)} child safes")
         return parent, children
 
 
