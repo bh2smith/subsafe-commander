@@ -3,6 +3,7 @@ from enum import Enum
 
 from gnosis.safe import Safe
 from gnosis.safe.multi_send import MultiSendTx
+from web3 import Web3
 
 from src.log import set_log
 from src.multisend import build_multisend_from_data
@@ -31,10 +32,16 @@ def transactions_for(
     """Builds transaction for given Snapshot command"""
 
     if command == SnapshotCommand.SET_DELEGATE:
-        log.info(
-            f"Setting delegation for namespace {SAFE_DELEGATION_ID} to parent {parent.address}"
-        )
-        params = [SAFE_DELEGATION_ID, parent.address]
+        delegate = input(f"Delegate Address(default={parent.address})")
+        if delegate != "":
+            try:
+                delegate = Web3().toChecksumAddress(delegate)
+            except ValueError as err:
+                raise ValueError(f'Invalid Delegate address "{delegate}"') from err
+        else:
+            delegate = parent.address
+        log.info(f"Setting delegation for namespace {SAFE_DELEGATION_ID} to {delegate}")
+        params = [SAFE_DELEGATION_ID, delegate]
     elif command == SnapshotCommand.CLEAR_DELEGATE:
         params = [SAFE_DELEGATION_ID]
     else:
