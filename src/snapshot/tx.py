@@ -35,7 +35,7 @@ def transactions_for(
         delegate = input(f"Delegate Address(default={parent.address}): ")
         if delegate != "":
             try:
-                delegate = Web3().toChecksumAddress(delegate)
+                delegate = Web3().to_checksum_address(delegate)
             except ValueError as err:
                 raise ValueError(f'Invalid Delegate address "{delegate}"') from err
         else:

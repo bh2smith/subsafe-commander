@@ -11,7 +11,6 @@ class MyTestCase(unittest.TestCase):
         self.str_value = "safe.eth"
 
     def test_delegation_id_from_hex(self):
-
         from_hex = DelegationId.from_hex(self.hex_value)
         self.assertEqual(str(from_hex), self.str_value)
         self.assertEqual(from_hex.hex, self.hex_value)

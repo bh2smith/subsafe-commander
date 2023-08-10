@@ -19,7 +19,7 @@ def transactions_for(
     parent: Safe, children: list[Safe], command: AirdropCommand
 ) -> list[MultiSendTx]:
     """Builds transaction for given Airdrop command"""
-    allocations: dict[Safe, list[Allocation]] = {}
+    allocations: dict[Safe, list[Allocation]] = {child: [] for child in children}
     for child in children:
         try:
             allocations[child] += Allocation.from_address(child.address)

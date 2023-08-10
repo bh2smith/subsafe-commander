@@ -11,7 +11,7 @@ from src.abis.load import load_contract_abi
 from src.environment import CLIENT
 
 AIRDROP_CONTRACT = CLIENT.w3.eth.contract(
-    address=Web3().toChecksumAddress("0xA0b937D5c8E32a80E3a8ed4227CD020221544ee6"),
+    address=Web3().to_checksum_address("0xA0b937D5c8E32a80E3a8ed4227CD020221544ee6"),
     abi=load_contract_abi("airdrop"),
 )
 

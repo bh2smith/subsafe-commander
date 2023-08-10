@@ -15,7 +15,6 @@ class TestMultiSend(unittest.TestCase):
         self.client = EthereumClient(URI(node_url))
 
     def test_fetch_and_parse_allocation_data(self):
-
         self.assertEqual(
             Allocation.from_address("0xa1097B957A62B75482CFB9Af960Cbd6B8F9F02e8"),
             [

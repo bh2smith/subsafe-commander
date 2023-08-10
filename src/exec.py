@@ -106,7 +106,7 @@ if __name__ == "__main__":
                 safe=parent,
                 sub_safe=child,
                 params=AddOwnerArgs(
-                    new_owner=Web3.toChecksumAddress(args.new_owner),
+                    new_owner=Web3.to_checksum_address(args.new_owner),
                     threshold=args.threshold,
                 ),
             )
