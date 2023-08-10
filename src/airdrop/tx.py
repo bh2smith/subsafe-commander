@@ -5,7 +5,7 @@ from gnosis.safe import Safe
 from gnosis.safe.multi_send import MultiSendTx
 
 from src.airdrop.allocation import Allocation
-from src.airdrop.encode import build_and_sign_redeem, build_and_sign_claim
+from src.airdrop.encode import build_and_sign_redeem
 
 
 class AirdropCommand(Enum):
@@ -19,32 +19,37 @@ def transactions_for(
     parent: Safe, children: list[Safe], command: AirdropCommand
 ) -> list[MultiSendTx]:
     """Builds transaction for given Airdrop command"""
-    allocations = {}
+    allocations: dict[Safe, list[Allocation]] = {}
     for child in children:
         try:
-            allocations[child] = Allocation.from_address(child.address)
+            allocations[child] += Allocation.from_address(child.address)
         except FileNotFoundError as err:
             print(f"Not Found: {err} - skipping!")
 
+    transactions = []
     if command == AirdropCommand.REDEEM:
-        return [
-            build_and_sign_redeem(
-                safe=parent,
-                sub_safe=child,
-                allocation=allocation,
-            )
-            for child, allocation in allocations.items()
-        ]
+        for child, allocation_list in allocations.items():
+            transactions += [
+                build_and_sign_redeem(
+                    safe=parent,
+                    sub_safe=child,
+                    allocation=allocation,
+                )
+                for allocation in allocation_list
+            ]
+        return transactions
 
     if command == AirdropCommand.CLAIM:
         print(f"Using Parent Safe {parent.address} as Beneficiary")
-        return [
-            build_and_sign_claim(
-                safe=parent,
-                sub_safe=child,
-                allocation=allocation,
-                beneficiary=parent.address,
-            )
-            for child, allocation in allocations.items()
-        ]
+        for child, allocation_list in allocations.items():
+            transactions += [
+                build_and_sign_redeem(
+                    safe=parent,
+                    sub_safe=child,
+                    allocation=allocation,
+                )
+                for allocation in allocation_list
+            ]
+        return transactions
+
     raise EnvironmentError(f"Invalid airdrop command: {command}")

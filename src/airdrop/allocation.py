@@ -61,7 +61,7 @@ class Allocation:
         return f"{ALLOCATION_BASE_URL}/{chain_id}/{address}.json"
 
     @classmethod
-    def from_address(cls, safe_address: str) -> Allocation:
+    def from_address(cls, safe_address: str) -> list[Allocation]:
         """
         Fetches and Parses Response for Safe Allocation Data
         Note that Safes received multiple Allocations (of different types)
@@ -82,13 +82,8 @@ class Allocation:
             json.loads(json.dumps(entry), object_hook=lambda d: Allocation(**d))
             for entry in response.json()
         ]
-        if len(allocations) > 1:
-            # TODO - implement nested redemption
-            print(
-                f"Detected {len(allocations)} allocations for {safe_address} - taking the first!"
-            )
         # First entry should be "user" allocation
-        return allocations[0]
+        return allocations
 
     def as_redeem_params(self) -> RedeemParams:
         """
