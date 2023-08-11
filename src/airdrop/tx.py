@@ -5,7 +5,7 @@ from gnosis.safe import Safe
 from gnosis.safe.multi_send import MultiSendTx
 
 from src.airdrop.allocation import Allocation
-from src.airdrop.encode import build_and_sign_redeem
+from src.airdrop.encode import build_and_sign_redeem, build_and_sign_claim
 
 
 class AirdropCommand(Enum):
@@ -43,13 +43,15 @@ def transactions_for(
         print(f"Using Parent Safe {parent.address} as Beneficiary")
         for child, allocation_list in allocations.items():
             transactions += [
-                build_and_sign_redeem(
+                build_and_sign_claim(
                     safe=parent,
                     sub_safe=child,
                     allocation=allocation,
+                    beneficiary=parent.address,
                 )
                 for allocation in allocation_list
             ]
+
         return transactions
 
     raise EnvironmentError(f"Invalid airdrop command: {command}")
