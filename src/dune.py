@@ -1,4 +1,4 @@
-"""Self contained program use of Dune Client"""
+"""Self-contained programmatic use of Dune Client"""
 import os
 
 from dotenv import load_dotenv

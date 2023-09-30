@@ -25,13 +25,13 @@ class MyTestCase(unittest.TestCase):
             ]
         )
         self.assertEqual(
-            list(map(lambda t: Web3().toChecksumAddress(t), expected)),
+            list(map(lambda t: Web3().to_checksum_address(t), expected)),
             fleet,
         )
 
         fleet = fetch_child_safes("0x20026f06342e16415b070ae3bdb3983af7c51c95", 3, 4)
         self.assertEqual(
-            list(map(lambda t: Web3().toChecksumAddress(t), expected[3:4])),
+            list(map(lambda t: Web3().to_checksum_address(t), expected[3:4])),
             fleet,
         )
 

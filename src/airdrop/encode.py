@@ -5,11 +5,11 @@ from enum import Enum
 
 from gnosis.safe import SafeOperation, Safe
 from gnosis.safe.multi_send import MultiSendTx
+from web3 import Web3
 
 from src.airdrop.allocation import Allocation, AIRDROP_CONTRACT, MAX_U128
 from src.multisend import build_multisend_from_data
 from src.safe import SafeTransaction, encode_exec_transaction
-from web3 import Web3
 
 
 def encode_redeem(allocation: Allocation) -> SafeTransaction:

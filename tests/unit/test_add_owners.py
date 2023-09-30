@@ -19,7 +19,7 @@ class TestMultiAddOwner(unittest.TestCase):
         self.parent = get_safe(
             "0x206a9EAa7d0f9637c905F2Bf86aCaB363Abb418c", self.client
         )
-        self.new_owner = Web3.toChecksumAddress(
+        self.new_owner = Web3.to_checksum_address(
             "0x262d23a2d916f6CF08e0235315aA51E22d142d0b"
         )
 
