@@ -42,7 +42,11 @@ class ExecCommand(Enum):
 
     def is_airdrop_function(self) -> bool:
         """Returns true if command is an airdrop contract function"""
-        return self in {ExecCommand.CLAIM, ExecCommand.REDEEM, ExecCommand.CLAIM_AND_REDEEM}
+        return self in {
+            ExecCommand.CLAIM,
+            ExecCommand.REDEEM,
+            ExecCommand.CLAIM_AND_REDEEM,
+        }
 
     def is_snapshot_function(self) -> bool:
         """Returns true if command is a snapshot contract function"""
@@ -121,9 +125,9 @@ if __name__ == "__main__":
             f"{args.command} is not a currently supported Exec interface method"
         )
 
-    # nonces = multi_exec(
-    #     parent, CLIENT, signing_key=os.environ["PROPOSER_PK"], transactions=transactions
-    # )
-    # log.info(
-    #     f"Transaction with nonce(s) {nonces} posted to {transaction_queue(parent.address)}"
-    # )
+    nonces = multi_exec(
+        parent, CLIENT, signing_key=os.environ["PROPOSER_PK"], transactions=transactions
+    )
+    log.info(
+        f"Transaction with nonce(s) {nonces} posted to {transaction_queue(parent.address)}"
+    )

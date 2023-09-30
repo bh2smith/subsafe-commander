@@ -37,7 +37,7 @@ def transactions_for(
                 )
                 for allocation in allocation_list
                 # all other tags are beyond the claim period
-                if allocation.tag == 'user_v2'
+                if allocation.tag == "user_v2"
             ]
         return transactions
 

@@ -26,7 +26,9 @@ class TestMultiSend(unittest.TestCase):
         self.client = EthereumClient(URI(node_url))
 
     def test_multisend_encoding(self):
-        receiver = Web3.to_checksum_address("0xde786877a10dbb7eba25a4da65aecf47654f08ab")
+        receiver = Web3.to_checksum_address(
+            "0xde786877a10dbb7eba25a4da65aecf47654f08ab"
+        )
         cow_token = Token("0x1111111111111111111111111111111111111111", decimals=18)
         self.assertEqual(
             build_encoded_multisend([], self.client),
