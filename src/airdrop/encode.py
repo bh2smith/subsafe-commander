@@ -5,6 +5,7 @@ from enum import Enum
 
 from gnosis.safe import SafeOperation, Safe
 from gnosis.safe.multi_send import MultiSendTx
+from web3 import Web3
 
 from src.airdrop.allocation import Allocation, AIRDROP_CONTRACT, MAX_U128
 from src.multisend import build_multisend_from_data
@@ -19,7 +20,7 @@ def encode_redeem(allocation: Allocation) -> SafeTransaction:
     """
 
     return SafeTransaction(
-        to=AIRDROP_CONTRACT.address,
+        to=Web3.to_checksum_address(allocation.contract),
         value=0,
         data=AIRDROP_CONTRACT.encodeABI("redeem", allocation.as_redeem_params()),
         operation=SafeOperation.CALL,
@@ -71,7 +72,7 @@ def encode_claim(
     # Could also use allocation.as_claim_params(beneficiary) - not sure what is better.
     claim_params = [allocation.vestingId, beneficiary, MAX_U128]
     return SafeTransaction(
-        to=AIRDROP_CONTRACT.address,
+        to=Web3.to_checksum_address(allocation.contract),
         value=0,
         data=AIRDROP_CONTRACT.encodeABI(str(method), claim_params),
         operation=SafeOperation.CALL,

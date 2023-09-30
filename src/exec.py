@@ -31,6 +31,7 @@ class ExecCommand(Enum):
 
     CLAIM = "CLAIM"
     REDEEM = "REDEEM"
+    CLAIM_AND_REDEEM = "CLAIM_AND_REDEEM"
     ADD_OWNER = "ADD_OWNER"
     SET_DELEGATE = "setDelegate"
     CLEAR_DELEGATE = "clearDelegate"
@@ -41,10 +42,14 @@ class ExecCommand(Enum):
 
     def is_airdrop_function(self) -> bool:
         """Returns true if command is an airdrop contract function"""
-        return self in {ExecCommand.CLAIM, ExecCommand.REDEEM}
+        return self in {
+            ExecCommand.CLAIM,
+            ExecCommand.REDEEM,
+            ExecCommand.CLAIM_AND_REDEEM,
+        }
 
     def is_snapshot_function(self) -> bool:
-        """Returns true if command is an snapshot contract function"""
+        """Returns true if command is a snapshot contract function"""
         return self in {ExecCommand.SET_DELEGATE, ExecCommand.CLEAR_DELEGATE}
 
     def as_airdrop_command(self) -> AirdropCommand:
@@ -70,18 +75,21 @@ if __name__ == "__main__":
     args, _ = parser.parse_known_args()
     command: ExecCommand = args.command
 
-    if command == ExecCommand.DELEGATE_REDEEM_CLAIM:
-        delegates = snapshot_tx_for(
-            parent, children, ExecCommand.SET_DELEGATE.as_snapshot_command()
-        )
+    if command in {ExecCommand.DELEGATE_REDEEM_CLAIM, ExecCommand.CLAIM_AND_REDEEM}:
         redeems = airdrop_tx_for(
             parent, children, ExecCommand.REDEEM.as_airdrop_command()
         )
         claims = airdrop_tx_for(
             parent, children, ExecCommand.CLAIM.as_airdrop_command()
         )
-        # Zip so all three items likely be batched together if transactions get partitioned
-        transactions = list(chain.from_iterable(zip(delegates, redeems, claims)))
+        if command == ExecCommand.DELEGATE_REDEEM_CLAIM:
+            delegates = snapshot_tx_for(
+                parent, children, ExecCommand.SET_DELEGATE.as_snapshot_command()
+            )
+            # Zip so all three items likely be batched together if transactions get partitioned
+            transactions = list(chain.from_iterable(zip(delegates, redeems, claims)))
+        else:
+            transactions = list(chain.from_iterable(zip(redeems, claims)))
     elif command.is_airdrop_function():
         transactions = airdrop_tx_for(parent, children, command.as_airdrop_command())
     elif command.is_snapshot_function():
@@ -106,7 +114,7 @@ if __name__ == "__main__":
                 safe=parent,
                 sub_safe=child,
                 params=AddOwnerArgs(
-                    new_owner=Web3.toChecksumAddress(args.new_owner),
+                    new_owner=Web3.to_checksum_address(args.new_owner),
                     threshold=args.threshold,
                 ),
             )

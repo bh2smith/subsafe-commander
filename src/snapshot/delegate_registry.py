@@ -9,7 +9,7 @@ from src.abis.load import load_contract_abi
 from src.environment import CLIENT
 
 DELEGATION_CONTRACT = CLIENT.w3.eth.contract(
-    address=Web3().toChecksumAddress("0x469788fE6E9E9681C6ebF3bF78e7Fd26Fc015446"),
+    address=Web3().to_checksum_address("0x469788fE6E9E9681C6ebF3bF78e7Fd26Fc015446"),
     abi=load_contract_abi("delegate_registry"),
 )
 

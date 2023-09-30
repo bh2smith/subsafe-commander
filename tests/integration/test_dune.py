@@ -1,5 +1,6 @@
 import unittest
 
+from dune_client.models import QueryFailed
 from web3 import Web3
 
 from src.dune import fetch_child_safes
@@ -25,13 +26,13 @@ class MyTestCase(unittest.TestCase):
             ]
         )
         self.assertEqual(
-            list(map(lambda t: Web3().toChecksumAddress(t), expected)),
+            list(map(lambda t: Web3().to_checksum_address(t), expected)),
             fleet,
         )
 
         fleet = fetch_child_safes("0x20026f06342e16415b070ae3bdb3983af7c51c95", 3, 4)
         self.assertEqual(
-            list(map(lambda t: Web3().toChecksumAddress(t), expected[3:4])),
+            list(map(lambda t: Web3().to_checksum_address(t), expected[3:4])),
             fleet,
         )
 
@@ -42,11 +43,8 @@ class MyTestCase(unittest.TestCase):
             str(err.exception),
             "No results returned for parent 0xa421e74a7ebc8f3354b7352ba7841084b701e85f",
         )
-        with self.assertRaises(ValueError) as err:
+        with self.assertRaises(QueryFailed) as err:
             fetch_child_safes("0xBadAddress", 0, 1)
-        self.assertEqual(
-            str(err.exception), "No results returned for parent 0xBadAddress"
-        )
 
 
 if __name__ == "__main__":

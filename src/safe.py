@@ -12,7 +12,7 @@ from gnosis.safe import Safe, SafeOperation
 from gnosis.safe.api import TransactionServiceApi
 from gnosis.safe.multi_send import MultiSendTx
 from web3 import Web3
-from web3.contract import Contract
+from web3.contract import Contract  # type:ignore
 
 from src.constants import ZERO_ADDRESS
 from src.dune import fetch_child_safes
@@ -30,7 +30,7 @@ def get_safe(address: str, client: EthereumClient) -> Safe:
     Fetches safe object at address
     Safe must exist on the `client.get_network()`
     """
-    return Safe(address=Web3.toChecksumAddress(address), ethereum_client=client)
+    return Safe(address=Web3.to_checksum_address(address), ethereum_client=client)
 
 
 @dataclass
@@ -130,9 +130,11 @@ class SafeFamily:
         )
 
         args, _ = parser.parse_known_args()
-        parent = Web3().toChecksumAddress(args.parent)
+        parent = Web3().to_checksum_address(args.parent)
         if args.sub_safes is not None:
-            children = [Web3().toChecksumAddress(c) for c in args.sub_safes.split(",")]
+            children = [
+                Web3().to_checksum_address(c) for c in args.sub_safes.split(",")
+            ]
         else:
             start = args.index_from
             length = args.num_safes

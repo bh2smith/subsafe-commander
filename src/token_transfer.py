@@ -45,7 +45,7 @@ class Token:
 
     def __init__(self, address: str | ChecksumAddress, decimals: Optional[int] = None):
         if isinstance(address, str):
-            address = Web3.toChecksumAddress(address)
+            address = Web3.to_checksum_address(address)
         self.address = address
         self.decimals = (
             decimals if decimals is not None else get_token_decimals(address)
@@ -100,7 +100,7 @@ class Transfer:
         token_address = obj.get("token_address", None)
         return cls(
             token=Token(token_address) if token_address else None,
-            receiver=Web3.toChecksumAddress(obj["receiver"]),
+            receiver=Web3.to_checksum_address(obj["receiver"]),
             amount_wei=int(obj["amount"]),
         )
 
