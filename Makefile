@@ -39,8 +39,8 @@ test-unit: install
 	$(ACTIVATE); python -m pytest tests/unit
 
 .PHONY: test-e2e
-test-e2e: install
-	$(ACTIVATE); python -m pytest tests/e2e
+test-integration: install
+	$(ACTIVATE); python -m pytest tests/integration
 
 .PHONY: test-all
-test-all: test-unit test-e2e
+test-all: test-unit test-integration
