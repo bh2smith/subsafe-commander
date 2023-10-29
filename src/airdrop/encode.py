@@ -1,5 +1,4 @@
 """Boilerplate code for encoding interactions with Airdrop Contract"""
-from __future__ import annotations
 
 from enum import Enum
 
