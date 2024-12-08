@@ -1,16 +1,12 @@
 import unittest
 
-from eth_typing import URI
-from gnosis.eth import EthereumClient
-
 from src.airdrop.allocation import Allocation
-from src.environment import INFURA_KEY
+from src.environment import CLIENT
 
 
 class TestMultiSend(unittest.TestCase):
     def setUp(self) -> None:
-        node_url = f"https://mainnet.infura.io/v3/{INFURA_KEY}"
-        self.client = EthereumClient(URI(node_url))
+        self.client = CLIENT
 
     def test_fetch_and_parse_allocation_data(self):
         self.assertEqual(

@@ -5,7 +5,6 @@ from gnosis.eth import EthereumClient
 from gnosis.safe.multi_send import MultiSendTx, MultiSendOperation
 from web3 import Web3
 
-from src.environment import INFURA_KEY
 from src.multisend import (
     build_encoded_multisend,
     build_and_sign_multisend,
@@ -22,8 +21,7 @@ from src.token_transfer import Token, Transfer
 
 class TestMultiSend(unittest.TestCase):
     def setUp(self) -> None:
-        node_url = f"https://sepolia.infura.io/v3/{INFURA_KEY}"
-        self.client = EthereumClient(URI(node_url))
+        self.client = EthereumClient(URI("https://rpc2.sepolia.org"))
 
     def test_multisend_encoding(self):
         receiver = Web3.to_checksum_address(
