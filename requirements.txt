@@ -4,6 +4,7 @@ requests==2.31.0
 safe-cli==0.7.1
 safe-eth-py==5.8.0
 web3==6.11.1
+eth_typing==4.4.0
 # Dev Deps.
 types-requests==2.31.0.10
 pytest==7.4.3

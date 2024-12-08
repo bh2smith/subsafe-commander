@@ -18,14 +18,6 @@ AIRDROP_CONTRACT = CLIENT.w3.eth.contract(
 ALLOCATION_BASE_URL = "https://safe-claiming-app-data.gnosis-safe.io/allocations"
 MAX_U128 = 340282366920938463463374607431768211455
 
-# redeem(
-#     curveType(uint8)
-#     durationWeeks(uint16)
-#     startDate(uint64)
-#     amount(uint128)
-#     proof(bytes32[])
-# )
-RedeemParams = tuple[int, int, int, int, list[str]]
 # claimVestedTokens[ViaModule](
 #     vestingId(bytes32)
 #     beneficiary(address)
@@ -84,23 +76,6 @@ class Allocation:
         ]
         # First entry should be "user" allocation
         return allocations
-
-    def as_redeem_params(self) -> RedeemParams:
-        """
-        curveType(uint8)
-        durationWeeks(uint16)
-        startDate(uint64)
-        amount(uint128)
-        proof(bytes32[]):
-        """
-        return (
-            self.curve,
-            self.durationWeeks,
-            self.startDate,
-            # received and stored as a string, but is solidity uint128.
-            int(self.amount),
-            self.proof,
-        )
 
     def as_claim_params(self, beneficiary: str) -> ClaimParams:
         """
