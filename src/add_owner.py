@@ -36,13 +36,7 @@ def build_add_owner_with_threshold(
         f"addOwnerWithThreshold({params.new_owner}, {params.threshold}) "
         f"on {sub_safe.address} as MultiSendTxm from {safe.address}"
     )
-    # Should consider using this instead of my own SafeTransaction object.
-    # tx = safe.build_multisig_tx(
-    #     to=MULTISEND_CONTRACT,
-    #     value=0,
-    #     data=encoded_multisend,
-    #     operation=SafeOperation.DELEGATE_CALL.value,
-    # )
+
     transaction = SafeTransaction(
         to=sub_safe.address,
         value=0,

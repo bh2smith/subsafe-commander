@@ -22,7 +22,7 @@ from src.token_transfer import Token, Transfer
 
 class TestMultiSend(unittest.TestCase):
     def setUp(self) -> None:
-        node_url = f"https://goerli.infura.io/v3/{INFURA_KEY}"
+        node_url = f"https://sepolia.infura.io/v3/{INFURA_KEY}"
         self.client = EthereumClient(URI(node_url))
 
     def test_multisend_encoding(self):

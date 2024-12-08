@@ -1,23 +1,13 @@
 """Transaction List Builder interface for exec script"""
-from enum import Enum
 
 from gnosis.safe import Safe
 from gnosis.safe.multi_send import MultiSendTx
 
 from src.airdrop.allocation import Allocation
-from src.airdrop.encode import build_and_sign_redeem, build_and_sign_claim
+from src.airdrop.encode import build_and_sign_claim
 
 
-class AirdropCommand(Enum):
-    """Enum containing all callable Airdrop contract methods"""
-
-    CLAIM = "CLAIM"
-    REDEEM = "REDEEM"
-
-
-def transactions_for(
-    parent: Safe, children: list[Safe]
-) -> list[MultiSendTx]:
+def transactions_for(parent: Safe, children: list[Safe]) -> list[MultiSendTx]:
     """Builds transaction for given Airdrop command"""
     allocations: dict[Safe, list[Allocation]] = {child: [] for child in children}
     for child in children:

@@ -4,7 +4,7 @@ from src.util import partition_array
 
 
 class MyTestCase(unittest.TestCase):
-    def test_something(self):
+    def test_partition_array(self):
         arr = [1, 2, 3]
         self.assertEqual(partition_array(arr, 3), [arr])
         self.assertEqual(partition_array(arr, 4), [arr])
