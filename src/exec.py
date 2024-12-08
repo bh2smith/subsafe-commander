@@ -12,7 +12,7 @@ from itertools import chain
 from web3 import Web3
 
 from src.add_owner import build_add_owner_with_threshold, AddOwnerArgs
-from src.airdrop.tx import transactions_for as airdrop_tx_for, AirdropCommand
+from src.airdrop.tx import transactions_for as claim_tx, AirdropCommand
 from src.log import set_log
 from src.snapshot.tx import transactions_for as snapshot_tx_for, SnapshotCommand
 from src.environment import CLIENT
@@ -30,23 +30,16 @@ class ExecCommand(Enum):
     """All supported Scrip Entry point commands"""
 
     CLAIM = "CLAIM"
-    REDEEM = "REDEEM"
-    CLAIM_AND_REDEEM = "CLAIM_AND_REDEEM"
     ADD_OWNER = "ADD_OWNER"
     SET_DELEGATE = "setDelegate"
     CLEAR_DELEGATE = "clearDelegate"
-    DELEGATE_REDEEM_CLAIM = "FullClaim"
 
     def __str__(self) -> str:
         return str(self.value)
 
-    def is_airdrop_function(self) -> bool:
+    def is_claim(self) -> bool:
         """Returns true if command is an airdrop contract function"""
-        return self in {
-            ExecCommand.CLAIM,
-            ExecCommand.REDEEM,
-            ExecCommand.CLAIM_AND_REDEEM,
-        }
+        return self in { ExecCommand.CLAIM }
 
     def is_snapshot_function(self) -> bool:
         """Returns true if command is a snapshot contract function"""
@@ -76,10 +69,10 @@ if __name__ == "__main__":
     command: ExecCommand = args.command
 
     if command in {ExecCommand.DELEGATE_REDEEM_CLAIM, ExecCommand.CLAIM_AND_REDEEM}:
-        redeems = airdrop_tx_for(
+        redeems = claim_tx(
             parent, children, ExecCommand.REDEEM.as_airdrop_command()
         )
-        claims = airdrop_tx_for(
+        claims = claim_tx(
             parent, children, ExecCommand.CLAIM.as_airdrop_command()
         )
         if command == ExecCommand.DELEGATE_REDEEM_CLAIM:
@@ -90,8 +83,8 @@ if __name__ == "__main__":
             transactions = list(chain.from_iterable(zip(delegates, redeems, claims)))
         else:
             transactions = list(chain.from_iterable(zip(redeems, claims)))
-    elif command.is_airdrop_function():
-        transactions = airdrop_tx_for(parent, children, command.as_airdrop_command())
+    elif command.is_claim():
+        transactions = claim_tx(parent, children, command.as_airdrop_command())
     elif command.is_snapshot_function():
         transactions = snapshot_tx_for(parent, children, command.as_snapshot_command())
     elif command == ExecCommand.ADD_OWNER:

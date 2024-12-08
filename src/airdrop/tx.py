@@ -16,7 +16,7 @@ class AirdropCommand(Enum):
 
 
 def transactions_for(
-    parent: Safe, children: list[Safe], command: AirdropCommand
+    parent: Safe, children: list[Safe]
 ) -> list[MultiSendTx]:
     """Builds transaction for given Airdrop command"""
     allocations: dict[Safe, list[Allocation]] = {child: [] for child in children}
@@ -27,33 +27,17 @@ def transactions_for(
             print(f"Not Found: {err} - skipping!")
 
     transactions = []
-    if command == AirdropCommand.REDEEM:
-        for child, allocation_list in allocations.items():
-            transactions += [
-                build_and_sign_redeem(
-                    safe=parent,
-                    sub_safe=child,
-                    allocation=allocation,
-                )
-                for allocation in allocation_list
-                # all other tags are beyond the claim period
-                if allocation.tag == "user_v2"
-            ]
-        return transactions
 
-    if command == AirdropCommand.CLAIM:
-        print(f"Using Parent Safe {parent.address} as Beneficiary")
-        for child, allocation_list in allocations.items():
-            transactions += [
-                build_and_sign_claim(
-                    safe=parent,
-                    sub_safe=child,
-                    allocation=allocation,
-                    beneficiary=parent.address,
-                )
-                for allocation in allocation_list
-            ]
+    print(f"Using Parent Safe {parent.address} as Beneficiary")
+    for child, allocation_list in allocations.items():
+        transactions += [
+            build_and_sign_claim(
+                safe=parent,
+                sub_safe=child,
+                allocation=allocation,
+                beneficiary=parent.address,
+            )
+            for allocation in allocation_list
+        ]
 
-        return transactions
-
-    raise EnvironmentError(f"Invalid airdrop command: {command}")
+    return transactions

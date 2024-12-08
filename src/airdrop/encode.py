@@ -45,25 +45,10 @@ def build_and_sign_redeem(
     )
 
 
-class ClaimMethods(Enum):
-    """
-    There are two different claim methods.
-    1. MODULE: which is used currently (before the SAFE token becomes transferable)
-    2. REGULAR: which can be used in the future when the token becomes transferable)
-    Note that Module claims use more gas!
-    """
-
-    REGULAR = "claimVestedTokens"
-    MODULE = "claimVestedTokensViaModule"
-
-    def __str__(self) -> str:
-        return str(self.value)
-
 
 def encode_claim(
     allocation: Allocation,
-    beneficiary: str,
-    method: ClaimMethods = ClaimMethods.REGULAR,
+    beneficiary: str
 ) -> SafeTransaction:
     """
     Encodes the Safe Airdrop claimVestedViaModule transaction for a given Safe:
@@ -73,7 +58,7 @@ def encode_claim(
     return SafeTransaction(
         to=Web3.to_checksum_address(allocation.contract),
         value=0,
-        data=AIRDROP_CONTRACT.encodeABI(str(method), claim_params),
+        data=AIRDROP_CONTRACT.encodeABI("claimVestedTokens", claim_params),
         operation=SafeOperation.CALL,
     )
 
@@ -96,7 +81,7 @@ def build_and_sign_claim(
             encode_claim(
                 allocation=allocation,
                 beneficiary=beneficiary,
-                method=ClaimMethods.MODULE,
+                method="claimVestedTokens",
             ),
         ),
     )
