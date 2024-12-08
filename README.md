@@ -10,7 +10,7 @@ are owned by a single "parent" safe, do this:
 Create an `.env` file with the following values:
 
 ```shell
-INFURA_KEY=
+NODE_URL=
 PARENT_SAFE=
 # Private key of Parent Owner
 PROPOSER_PK=
@@ -23,7 +23,7 @@ Run the following (full-claim script)
 docker run --pull=always -it --rm \
   --env-file .env \
   ghcr.io/bh2smith/subsafe-commander:main \
-  --command FullClaim \
+  --command CLAIM \
   --parent $PARENT_SAFE
 ```
 
@@ -44,11 +44,10 @@ With environment variables
 
 ```shell
 # General defaults
-NETWORK=mainnet
+NODE_URL=https://rpc.ankr.com/eth
 INDEX_FROM=0
 NUM_SAFES=90 <-- This is the CAP.
 # Must be provided
-INFURA_KEY=
 PARENT_SAFE=
 # Private key of Parent Owner
 PROPOSER_PK=
@@ -71,7 +70,7 @@ docker run --pull=always -it --rm \
 with currently supported commands
 
 ```shell
---command {CLAIM,REDEEM,ADD_OWNER,setDelegate,clearDelegate}
+--command {CLAIM,ADD_OWNER,setDelegate,clearDelegate}
 ```
 
 Note that `--sub-safes` is optional. If not provided then a `DUNE_API_KEY` will be expected (to
@@ -126,8 +125,8 @@ Requires no additional arguments.
 # Installation & Local Development
 
 ```shell
-python3 -m venv env
-source ./env/bin/activate
+python3 -m .venv .venv
+source ./.venv/bin/activate
 pip install -r requirements.txt
 cp .env.sample .env    <----- Copy your Dune credentials here!
 ```
