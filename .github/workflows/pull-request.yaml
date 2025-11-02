@@ -26,3 +26,35 @@ jobs:
           INFURA_KEY: ${{ secrets.INFURA_KEY }}
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
           PROPOSER_PK: ${{ secrets.PROPOSER_PK }}
+
+  rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rs
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Cargo registry and target directory
+        uses: actions/cache@v4
+        with:
+          path: |
+            rs/.cargo/registry
+            rs/.cargo/git
+            rs/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('rs/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      - name: Lint with Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Run tests
+        run: cargo test --all
+
+      - name: Build
+        run: cargo build

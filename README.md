@@ -1,8 +1,26 @@
 # SubSafe Commander for Safe Transaction Batching
 
-Control your Fleet of safes from the command line! Claim your $SAFE token airdrop in style. 
+Control your Fleet of safes from the command line! Claim your $SAFE token airdrop in style.
 
-## TLDR;
+## 🦀 Rust Implementation Available!
+
+This project is now available in **both Python and Rust**! 
+
+- **Python** (original): Stable, battle-tested implementation in the root directory
+- **Rust** (new): High-performance, type-safe implementation in the `rs/` directory
+
+For the Rust version, see [`rs/README.md`](rs/README.md) for detailed instructions.
+
+**Quick start with Rust:**
+```bash
+cd rs
+cargo build --release
+./target/release/subsafe-commander --help
+```
+
+---
+
+## TLDR; (Python Version)
 
 To Claim $SAFE Airdrop on behalf of a family of sub-safes (with signing threshold 1) all of which
 are owned by a single "parent" safe, do this:
